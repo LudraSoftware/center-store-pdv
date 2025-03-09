@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Cadastro</title>
+</head>
+<body>
+    <h2>Cadastro</h2>
+    <form action="/register" method="POST">
+        <input type="text" name="name" placeholder="Nome" required>
+        <input type="email" name="email" placeholder="E-mail" required>
+        <input type="password" name="password" placeholder="Senha" required>
+        <select name="type">
+            <option value="admin">Admin</option>
+            <option value="user">Usuário</option>
+        </select>
+        <button type="submit">Cadastrar</button>
+    </form>
+</body>
+</html>
