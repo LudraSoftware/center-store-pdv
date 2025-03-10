@@ -24,6 +24,7 @@ app.use(passport.session());
 
 // Rotas
 app.use('/', require('./routes/authRoutes'));
+app.use('/', require('./routes/suppliersRoutes'));
 
 // Iniciar servidor
 db.sequelize.sync().then(() => {

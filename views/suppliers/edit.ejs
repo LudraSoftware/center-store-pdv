@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Editar Fornecedor</title>
+</head>
+<body>
+    <h2>Editar Fornecedor</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
+    <form action="/suppliers/edit/<%= supplier.id %>" method="POST">
+        <input type="text" name="name" value="<%= supplier.name %>" required>
+        <button type="submit">Salvar Alterações</button>
+    </form>
+    <a href="/suppliers">Voltar para lista</a>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Lista de Fornecedores</title>
+</head>
+<body>
+    <h2>Lista de Fornecedores</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
+    <a href="/suppliers/new">Adicionar Novo Fornecedor</a>
+    <ul>
+        <% suppliers.forEach(supplier => { %>
+            <li>
+                <%= supplier.name %> 
+                <a href="/suppliers/edit/<%= supplier.id %>">Editar</a>
+                <form action="/suppliers/delete/<%= supplier.id %>" method="POST" style="display:inline;">
+                    <button type="submit">Excluir</button>
+                </form>
+            </li>
+        <% }); %>
+    </ul>
+</body>
+</html>
