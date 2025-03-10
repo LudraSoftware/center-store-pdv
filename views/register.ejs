@@ -5,6 +5,12 @@
 </head>
 <body>
     <h2>Cadastro</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
     <form action="/register" method="POST">
         <input type="text" name="name" placeholder="Nome" required>
         <input type="email" name="email" placeholder="E-mail" required>

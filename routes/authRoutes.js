@@ -1,43 +1,59 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const { User } = require('../models');
+const db = require('../models'); // Importa o banco de dados corretamente
 
 const router = express.Router();
 
-router.get('/login', (req, res) => res.render('login', { message: req.flash('error') }));
+// Página de login
+router.get('/login', (req, res) => res.render('login', { messageError: req.flash('error'), messageSuccess: req.flash('success') }));
 
+// Autenticação do login
 router.post('/login', passport.authenticate('local', {
   successRedirect: '/dashboard',
   failureRedirect: '/login',
   failureFlash: true
 }));
 
-router.get('/register', (req, res) => res.render('register'));
+// Página de registro
+router.get('/register', (req, res) => res.render('register', { messageError: req.flash('error'), messageSuccess: req.flash('success') }));
 
+// Registro de usuário
 router.post('/register', async (req, res) => {
   const { name, email, password, type } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    await User.create({ name, email, password: hashedPassword, type });
+    // Verifica se o email já existe
+    const existingUser = await db.User.findOne({ where: { email } });
+    if (existingUser) {
+      req.flash('error', 'E-mail já cadastrado! Tente outro.');
+      return res.redirect('/register');
+    }
+    
+    await db.User.create({ name, email, password: hashedPassword, type });
     req.flash('success', 'Cadastro realizado com sucesso! Faça login.');
     res.redirect('/login');
   } catch (err) {
+    console.error('❌ Erro ao cadastrar usuário:', err);
+    req.flash('error', 'Erro ao cadastrar usuário. Verifique os dados e tente novamente.');
     res.redirect('/register');
   }
 });
 
+// Página de dashboard (somente autenticado)
 router.get('/dashboard', (req, res) => {
   if (!req.isAuthenticated()) {
     req.flash('error', 'Você precisa estar logado!');
     return res.redirect('/login');
   }
-  res.render('dashboard', { user: req.user });
+  res.render('dashboard', { user: req.user, messageError: req.flash('error'), messageSuccess: req.flash('success') });
 });
 
+// Logout
 router.get('/logout', (req, res) => {
   req.logout(() => {
+    req.flash('success', 'Logout realizado com sucesso!');
     res.redirect('/login');
   });
 });
