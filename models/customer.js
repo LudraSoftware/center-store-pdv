@@ -1,28 +1,32 @@
-const { Model, DataTypes } = require("sequelize");
+const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
   class Customer extends Model {}
-  Customer.init(
-    {
-      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      name: { type: DataTypes.STRING, allowNull: false },
-      address_id: {
-        type: DataTypes.INTEGER,
-        references: { model: "customer_address", key: "id" },
-      },
-      info_id: {
-        type: DataTypes.INTEGER,
-        references: { model: "customer_info", key: "id" },
-      },
+
+  Customer.init({
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    address_id: { 
+      type: DataTypes.INTEGER, 
+      allowNull: false, 
+      references: { model: 'customer_address', key: 'id' }, 
+      onUpdate: 'CASCADE', 
+      onDelete: 'CASCADE'
     },
-    {
-      sequelize,
-      modelName: "customer",
-      tableName: "customer",
-      freezeTableName: true,
-      timestamps: true,
+    info_id: { 
+      type: DataTypes.INTEGER, 
+      allowNull: false, 
+      references: { model: 'customer_info', key: 'id' }, 
+      onUpdate: 'CASCADE', 
+      onDelete: 'CASCADE'
     }
-  );
+  }, { 
+    sequelize, 
+    modelName: 'Customer', 
+    tableName: 'customer',
+    freezeTableName: true,
+    timestamps: false
+  });
 
   return Customer;
 };

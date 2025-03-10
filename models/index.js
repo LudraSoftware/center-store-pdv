@@ -23,8 +23,8 @@ Supplier.hasMany(Product, { foreignKey: 'supplier_id' });
 Product.belongsTo(Supplier, { foreignKey: 'supplier_id' });
 Product.hasMany(Sales, { foreignKey: 'product_id' });
 
-Customer.hasOne(CustomerInfo, { foreignKey: 'id' });
-Customer.hasOne(CustomerAddress, { foreignKey: 'id' });
+Customer.belongsTo(CustomerInfo, { foreignKey: 'info_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Customer.belongsTo(CustomerAddress, { foreignKey: 'address_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Customer.hasMany(Sales, { foreignKey: 'customer_id' });
 
 Sales.belongsTo(User, { foreignKey: 'seller_id' });

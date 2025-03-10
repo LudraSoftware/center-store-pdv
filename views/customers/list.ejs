@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Lista de Clientes</title>
+</head>
+<body>
+    <h2>Lista de Clientes</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
+    <a href="/customers/new">Adicionar Novo Cliente</a>
+    <ul>
+        <% customers.forEach(customer => { %>
+            <li>
+                <%= customer.name %> - <%= customer.CustomerInfo.email %>
+                <a href="/customers/edit/<%= customer.id %>">Editar</a>
+                <form action="/customers/delete/<%= customer.id %>" method="POST" style="display:inline;">
+                    <button type="submit">Excluir</button>
+                </form>
+            </li>
+        <% }); %>
+    </ul>
+</body>
+</html>

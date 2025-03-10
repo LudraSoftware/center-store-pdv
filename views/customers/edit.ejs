@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Editar Cliente</title>
+</head>
+<body>
+    <h2>Editar Cliente</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
+    <form action="/customers/edit/<%= customer.id %>" method="POST">
+        <h3>Dados Pessoais</h3>
+        <input type="text" name="name" placeholder="Nome" required value="<%= customer.name %>">
+        <input type="text" name="document" placeholder="Documento" required value="<%= customer.CustomerInfo.document %>">
+        <input type="email" name="email" placeholder="E-mail" required value="<%= customer.CustomerInfo.email %>">
+        <input type="text" name="phone_number" placeholder="Telefone" required value="<%= customer.CustomerInfo.phone_number %>">
+        <input type="text" name="alt_phone_number" placeholder="Telefone Alternativo" value="<%= customer.CustomerInfo.alt_phone_number %>">
+
+        <h3>Endereço</h3>
+        <input type="text" name="postal_code" placeholder="CEP" required value="<%= customer.CustomerAddress.postal_code %>">
+        <input type="text" name="street" placeholder="Rua" required value="<%= customer.CustomerAddress.street %>">
+        <input type="text" name="number" placeholder="Número" required value="<%= customer.CustomerAddress.number %>">
+        <input type="text" name="neighborhood" placeholder="Bairro" required value="<%= customer.CustomerAddress.neighborhood %>">
+        <input type="text" name="state" placeholder="Estado" required value="<%= customer.CustomerAddress.state %>">
+
+        <button type="submit">Salvar Alterações</button>
+    </form>
+    <form action="/customers/delete/<%= customer.id %>" method="POST">
+        <button type="submit" style="color: red;">Excluir Cliente</button>
+    </form>
+    <a href="/dashboard">Voltar</a>
+</body>
+</html>

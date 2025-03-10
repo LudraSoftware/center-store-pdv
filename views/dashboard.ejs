@@ -4,10 +4,17 @@
     <title>Dashboard</title>
 </head>
 <body>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
     <h2>Bem-vindo, <%= user.name %></h2>
     <p>Tipo: <%= user.type %></p>
     <a href="/suppliers">Gerenciar Fornecedores</a>
     <a href="/products">Gerenciar Produtos</a>
+    <a href="/customers">Gerenciar Clientes</a>
     <br>
     <a href="/logout">Sair</a>
 </body>
