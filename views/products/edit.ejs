@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Editar Produto</title>
+</head>
+<body>
+    <h2>Editar Produto</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
+    <form action="/products/edit/<%= product.id %>" method="POST">
+        <input type="text" name="name" value="<%= product.name %>" required>
+        <input type="number" name="cost_value" value="<%= product.cost_value %>" required step="0.01">
+        <input type="number" name="sale_value" value="<%= product.sale_value %>" required step="0.01">
+        <label>Fornecedor (opcional):
+            <select name="supplier_id">
+                <option value="">Nenhum</option>
+                <% suppliers.forEach(supplier => { %>
+                    <option value="<%= supplier.id %>" <%= product.supplier_id === supplier.id ? 'selected' : '' %>><%= supplier.name %></option>
+                <% }); %>
+            </select>
+        </label>
+        <button type="submit">Salvar Alterações</button>
+    </form>
+    <a href="/products">Voltar para lista</a>
+</body>
+</html>

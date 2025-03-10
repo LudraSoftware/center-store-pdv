@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Novo Produto</title>
+</head>
+<body>
+    <h2>Cadastrar Produto</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
+    <form action="/products" method="POST">
+        <input type="text" name="name" placeholder="Nome do Produto" required>
+        <input type="number" name="cost_value" placeholder="Valor de Custo" required step="0.01">
+        <input type="number" name="sale_value" placeholder="Valor de Venda" required step="0.01">
+        <label>Fornecedor (opcional):
+            <select name="supplier_id">
+                <option value="">Nenhum</option>
+                <% suppliers.forEach(supplier => { %>
+                    <option value="<%= supplier.id %>"><%= supplier.name %></option>
+                <% }); %>
+            </select>
+        </label>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <a href="/products">Voltar para lista</a>
+</body>
+</html>

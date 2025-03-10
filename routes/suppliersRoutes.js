@@ -1,10 +1,11 @@
 const express = require('express');
 const db = require('../models'); // Importa o banco de dados corretamente
+const { ensureAuthenticated, ensureAdmin  } = require('../middlewares/auth');
 
 const router = express.Router();
 
 // Listar todos os fornecedores
-router.get('/suppliers', async (req, res) => {
+router.get('/suppliers', ensureAuthenticated, ensureAdmin , async(req, res) => {
   try {
     const suppliers = await db.Supplier.findAll();
     res.render('suppliers/list', { suppliers, messageError: req.flash('error'), messageSuccess: req.flash('success') });
@@ -21,7 +22,7 @@ router.get('/suppliers/new', (req, res) => {
 });
 
 // Cadastro de fornecedor
-router.post('/suppliers', async (req, res) => {
+router.post('/suppliers', ensureAuthenticated, ensureAdmin , async(req, res) => {
   const { name } = req.body;
   try {
     await db.Supplier.create({ name });
@@ -35,7 +36,7 @@ router.post('/suppliers', async (req, res) => {
 });
 
 // Página de edição de fornecedor
-router.get('/suppliers/edit/:id', async (req, res) => {
+router.get('/suppliers/edit/:id', ensureAuthenticated, ensureAdmin , async(req, res) => {
   try {
     const supplier = await db.Supplier.findByPk(req.params.id);
     if (!supplier) {
@@ -51,7 +52,7 @@ router.get('/suppliers/edit/:id', async (req, res) => {
 });
 
 // Atualização de fornecedor
-router.post('/suppliers/edit/:id', async (req, res) => {
+router.post('/suppliers/edit/:id', ensureAuthenticated, ensureAdmin , async(req, res) => {
   const { name } = req.body;
   try {
     const supplier = await db.Supplier.findByPk(req.params.id);
@@ -70,7 +71,7 @@ router.post('/suppliers/edit/:id', async (req, res) => {
 });
 
 // Exclusão de fornecedor
-router.post('/suppliers/delete/:id', async (req, res) => {
+router.post('/suppliers/delete/:id', ensureAuthenticated, ensureAdmin , async(req, res) => {
   try {
     const supplier = await db.Supplier.findByPk(req.params.id);
     if (!supplier) {
