@@ -1,3 +1,5 @@
+const { Model, DataTypes } = require("sequelize");
+
 // 📌 Model: invoice_products.js
 module.exports = (sequelize) => {
   class InvoiceProducts extends Model {}
