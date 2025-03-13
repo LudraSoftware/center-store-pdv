@@ -25,17 +25,28 @@ module.exports = {
       name: { type: Sequelize.STRING, allowNull: false },
     });
 
-    await queryInterface.createTable("product", {
+    await queryInterface.createTable('product', {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       name: { type: Sequelize.STRING, allowNull: false },
-      supplier_id: {
-        type: Sequelize.INTEGER,
-        references: { model: "supplier", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
+      supplier_id: { 
+        type: Sequelize.INTEGER, 
+        references: { model: 'supplier', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       cost_value: { type: Sequelize.FLOAT, allowNull: false },
-      sale_value: { type: Sequelize.FLOAT, allowNull: false },
+      sale_value: { type: Sequelize.FLOAT, allowNull: false }
+    });
+
+    await queryInterface.createTable('inventory', {
+      id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+      product_id: { 
+        type: Sequelize.INTEGER, 
+        references: { model: 'product', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 }
     });
 
     await queryInterface.createTable("customer_info", {
@@ -109,44 +120,71 @@ module.exports = {
         ),
       },
     });
-
-    await queryInterface.createTable("sales", {
+    
+    await queryInterface.createTable('invoice', {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-      product_id: {
-        type: Sequelize.INTEGER,
-        references: { model: "product", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
-      },
-      seller_id: {
-        type: Sequelize.INTEGER,
-        references: { model: "user", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
-      },
-      customer_id: {
-        type: Sequelize.INTEGER,
-        references: { model: "customer", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
-      },
       discount: { type: Sequelize.FLOAT, allowNull: true },
       pix_value: { type: Sequelize.FLOAT, allowNull: true },
       credit_value: { type: Sequelize.FLOAT, allowNull: true },
       debit_value: { type: Sequelize.FLOAT, allowNull: true },
       money_value: { type: Sequelize.FLOAT, allowNull: true },
       other_value: { type: Sequelize.FLOAT, allowNull: true },
-      other_desc: { type: Sequelize.STRING, allowNull: true },
+      other_desc: { type: Sequelize.STRING, allowNull: true }
     });
+
+    await queryInterface.createTable('sales', {
+      id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+      invoice_id: { 
+        type: Sequelize.INTEGER, 
+        references: { model: 'invoice', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      seller_id: { 
+        type: Sequelize.INTEGER, 
+        references: { model: 'user', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
+      customer_id: { 
+        type: Sequelize.INTEGER, 
+        references: { model: 'customer', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      }
+    });
+
+    await queryInterface.createTable('invoice_products', {
+      product_id: { 
+        type: Sequelize.INTEGER, 
+        references: { model: 'product', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      invoice_id: { 
+        type: Sequelize.INTEGER, 
+        references: { model: 'invoice', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 1 }
+    });
+
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable("sales");
-    await queryInterface.dropTable("customer");
-    await queryInterface.dropTable("customer_address");
-    await queryInterface.dropTable("customer_info");
-    await queryInterface.dropTable("product");
-    await queryInterface.dropTable("supplier");
-    await queryInterface.dropTable("user");
-  },
+    await queryInterface.dropTable('invoice_products');
+    await queryInterface.dropTable('sales');
+    await queryInterface.dropTable('invoice');
+
+    await queryInterface.dropTable('customer');
+    await queryInterface.dropTable('customer_info');
+    await queryInterface.dropTable('customer_address');
+
+    await queryInterface.dropTable('inventory');
+    await queryInterface.dropTable('product');
+    await queryInterface.dropTable('supplier');
+
+    await queryInterface.dropTable('user');
+}
 };

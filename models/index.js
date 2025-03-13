@@ -15,22 +15,23 @@ const Product = require('./product')(sequelize);
 const CustomerInfo = require('./customer_info')(sequelize);
 const CustomerAddress = require('./customer_address')(sequelize);
 const Customer = require('./customer')(sequelize);
+const Invoice = require('./invoice')(sequelize);
 const Sales = require('./sales')(sequelize);
 
 // Criar as associações entre os models
-User.hasMany(Sales, { foreignKey: 'seller_id' });
-Supplier.hasMany(Product, { foreignKey: 'supplier_id' });
+User.hasMany(Invoice, { foreignKey: 'seller_id' });
+Customer.hasMany(Invoice, { foreignKey: 'customer_id' });
+
+Invoice.belongsTo(User, { foreignKey: 'seller_id' });
+Invoice.belongsTo(Customer, { foreignKey: 'customer_id' });
+Invoice.hasMany(Sales, { foreignKey: 'invoice_id', onDelete: 'CASCADE' });
+
 Product.belongsTo(Supplier, { foreignKey: 'supplier_id' });
-Product.hasMany(Sales, { foreignKey: 'product_id' });
+Supplier.hasMany(Product, { foreignKey: 'supplier_id' });
 
-Customer.belongsTo(CustomerInfo, { foreignKey: 'info_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Customer.belongsTo(CustomerAddress, { foreignKey: 'address_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Customer.hasMany(Sales, { foreignKey: 'customer_id' });
-
-Sales.belongsTo(User, { foreignKey: 'seller_id' });
 Sales.belongsTo(Product, { foreignKey: 'product_id' });
-Sales.belongsTo(Customer, { foreignKey: 'customer_id' });
+Sales.belongsTo(Invoice, { foreignKey: 'invoice_id' });
 
-const db = { sequelize, Sequelize, User, Supplier, Product, CustomerInfo, CustomerAddress, Customer, Sales };
+const db = { sequelize, Sequelize, User, Supplier, Product, CustomerInfo, CustomerAddress, Customer, Invoice, Sales };
 
 module.exports = db;
