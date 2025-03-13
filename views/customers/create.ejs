@@ -1,0 +1,30 @@
+<!-- 📌 customers/create.ejs -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Adicionar Cliente</title>
+</head>
+<body>
+    <h2>Adicionar Cliente</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
+    <form action="/customers/create" method="POST">
+        <input type="text" name="name" placeholder="Nome" required>
+        <input type="text" name="document" placeholder="Documento" required>
+        <input type="email" name="email" placeholder="E-mail" required>
+        <input type="text" name="phone_number" placeholder="Telefone" required>
+        <input type="text" name="alt_phone_number" placeholder="Telefone Alternativo">
+        <input type="text" name="postal_code" placeholder="CEP" required>
+        <input type="text" name="street" placeholder="Rua" required>
+        <input type="text" name="number" placeholder="Número" required>
+        <input type="text" name="neighborhood" placeholder="Bairro" required>
+        <input type="text" name="state" placeholder="Estado" required>
+        <button type="submit">Salvar</button>
+    </form>
+    <a href="/customers">Voltar</a>
+</body>
+</html>

@@ -1,4 +1,4 @@
-const { Model, DataTypes } = require('sequelize');
+const { Model, DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
   class Customer extends Model {}
@@ -8,25 +8,28 @@ module.exports = (sequelize) => {
     name: { type: DataTypes.STRING, allowNull: false },
     address_id: { 
       type: DataTypes.INTEGER, 
-      allowNull: false, 
-      references: { model: 'customer_address', key: 'id' }, 
-      onUpdate: 'CASCADE', 
+      references: { model: 'customer_address', key: 'id' },
+      onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
     },
     info_id: { 
       type: DataTypes.INTEGER, 
-      allowNull: false, 
-      references: { model: 'customer_info', key: 'id' }, 
-      onUpdate: 'CASCADE', 
+      references: { model: 'customer_info', key: 'id' },
+      onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
     }
-  }, { 
-    sequelize, 
-    modelName: 'Customer', 
+  }, {
+    sequelize,
+    modelName: 'Customer',
     tableName: 'customer',
     freezeTableName: true,
-    timestamps: true
+    timestamps: true // 🔹 Mantendo timestamps ativos
   });
+
+  Customer.associate = (models) => {
+    Customer.belongsTo(models.CustomerInfo, { foreignKey: 'info_id', as: 'customerInfo' }); // 🔹 Mudando alias de "info" para "customerInfo"
+    Customer.belongsTo(models.CustomerAddress, { foreignKey: 'address_id', as: 'customerAddress' });
+  };
 
   return Customer;
 };

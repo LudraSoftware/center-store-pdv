@@ -26,7 +26,7 @@ app.use(passport.session());
 app.use('/', require('./routes/authRoutes'));
 app.use('/suppliers', require('./routes/suppliersRoutes'));
 app.use('/products', require('./routes/productsRoutes'));
-app.use('/', require('./routes/customerRoutes'));
+app.use('/customers', require('./routes/customerRoutes'));
 
 // Iniciar servidor
 db.sequelize.sync().then(() => {

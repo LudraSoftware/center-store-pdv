@@ -1,0 +1,30 @@
+
+<!-- 📌 customers/view.ejs -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Detalhes do Cliente</title>
+</head>
+<body>
+    <h2>Cliente: <%= customer.name %></h2>
+    <% if (customer.customerInfo) { %>
+        <p>Documento: <%= customer.customerInfo.document %></p>
+        <p>Email: <%= customer.customerInfo.email %></p>
+        <p>Telefone: <%= customer.customerInfo.phone_number %></p>
+        <p>Telefone Alternativo: <%= customer.customerInfo.alt_phone_number %></p>
+    <% } else { %>
+        <p><em>Sem informações adicionais</em></p>
+    <% } %>
+    
+    <% if (customer.customerAddress) { %>
+        <h3>Endereço</h3>
+        <p>CEP: <%= customer.customerAddress.postal_code %></p>
+        <p>Rua: <%= customer.customerAddress.street %>, <%= customer.customerAddress.number %></p>
+        <p>Bairro: <%= customer.customerAddress.neighborhood %></p>
+        <p>Estado: <%= customer.customerAddress.state %></p>
+    <% } else { %>
+        <p><em>Sem endereço cadastrado</em></p>
+    <% } %>
+    <a href="/customers">Voltar</a>
+</body>
+</html>
