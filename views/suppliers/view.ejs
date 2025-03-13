@@ -1,0 +1,21 @@
+<!-- 📌 suppliers/view.ejs -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Detalhes do Fornecedor</title>
+</head>
+<body>
+    <h2>Fornecedor: <%= supplier.name %></h2>
+    <h3>Produtos Associados:</h3>
+    <% if (supplier.products.length > 0) { %>
+        <ul>
+            <% supplier.products.forEach(product => { %>
+                <li><%= product.name %> - Valor: R$ <%= product.sale_value.toFixed(2) %></li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>Nenhum produto associado a este fornecedor.</p>
+    <% } %>
+    <a href="/suppliers">Voltar</a>
+</body>
+</html>

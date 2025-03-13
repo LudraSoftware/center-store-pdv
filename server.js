@@ -24,7 +24,7 @@ app.use(passport.session());
 
 // Rotas
 app.use('/', require('./routes/authRoutes'));
-app.use('/', require('./routes/suppliersRoutes'));
+app.use('/suppliers', require('./routes/suppliersRoutes'));
 app.use('/', require('./routes/productsRoutes'));
 app.use('/', require('./routes/customerRoutes'));
 

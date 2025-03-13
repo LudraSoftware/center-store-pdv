@@ -1,20 +1,21 @@
+<!-- 📌 suppliers/create.ejs -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <title>Novo Fornecedor</title>
+    <title>Adicionar Fornecedor</title>
 </head>
 <body>
-    <h2>Cadastrar Fornecedor</h2>
+    <h2>Adicionar Fornecedor</h2>
     <% if (messageError) { %>
         <p style="color: red;"><%= messageError %></p>
     <% } %>
     <% if (messageSuccess) { %>
         <p style="color: green;"><%= messageSuccess %></p>
     <% } %>
-    <form action="/suppliers" method="POST">
+    <form action="/suppliers/create" method="POST">
         <input type="text" name="name" placeholder="Nome do Fornecedor" required>
-        <button type="submit">Cadastrar</button>
+        <button type="submit">Salvar</button>
     </form>
-    <a href="/suppliers">Voltar para lista</a>
+    <a href="/suppliers">Voltar</a>
 </body>
 </html>
