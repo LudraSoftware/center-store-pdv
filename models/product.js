@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require("sequelize");
 
-module.exports = (sequelize) => { 
+module.exports = (sequelize) => {
   class Product extends Model {}
 
   Product.init({
@@ -19,11 +19,12 @@ module.exports = (sequelize) => {
     modelName: 'Product',
     tableName: 'product',
     freezeTableName: true,
-    timestamps: false
+    timestamps: true
   });
 
   Product.associate = (models) => {
     Product.belongsTo(models.Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
+    Product.hasOne(models.Inventory, { foreignKey: 'product_id', as: 'inventory' }); // 🔹 Definir relação com Inventory
   };
 
   return Product;

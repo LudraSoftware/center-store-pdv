@@ -17,6 +17,7 @@ db.Sequelize = Sequelize;
 db.User = require('./user')(sequelize);
 db.Supplier = require('./supplier')(sequelize);
 db.Product = require('./product')(sequelize);
+db.Inventory = require('./inventory')(sequelize);
 db.CustomerInfo = require('./customer_info')(sequelize);
 db.CustomerAddress = require('./customer_address')(sequelize);
 db.Customer = require('./customer')(sequelize);

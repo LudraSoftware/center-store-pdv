@@ -11,7 +11,7 @@ module.exports = (sequelize) => { // 🔹 Remove DataTypes do parâmetro
     modelName: 'Supplier',
     tableName: 'supplier',
     freezeTableName: true,
-    timestamps: false
+    timestamps: true
   });
 
   Supplier.associate = (models) => {

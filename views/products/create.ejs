@@ -1,0 +1,30 @@
+<!-- 📌 products/create.ejs -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Adicionar Produto</title>
+</head>
+<body>
+    <h2>Adicionar Produto</h2>
+    <% if (messageError) { %>
+        <p style="color: red;"><%= messageError %></p>
+    <% } %>
+    <% if (messageSuccess) { %>
+        <p style="color: green;"><%= messageSuccess %></p>
+    <% } %>
+    <form action="/products/create" method="POST">
+        <input type="text" name="name" placeholder="Nome do Produto" required>
+        <select name="supplier_id">
+            <option value="">Selecione um Fornecedor</option>
+            <% suppliers.forEach(supplier => { %>
+                <option value="<%= supplier.id %>"><%= supplier.name %></option>
+            <% }) %>
+        </select>
+        <input type="number" name="cost_value" placeholder="Valor de Custo" required>
+        <input type="number" name="sale_value" placeholder="Valor de Venda" required>
+        <input type="number" name="quantity" placeholder="Quantidade" required>
+        <button type="submit">Salvar</button>
+    </form>
+    <a href="/products">Voltar</a>
+</body>
+</html>

@@ -1,27 +1,30 @@
+<!-- 📌 products/list.ejs -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <title>Lista de Produtos</title>
 </head>
 <body>
-    <h2>Lista de Produtos</h2>
+    <h2>Produtos</h2>
     <% if (messageError) { %>
         <p style="color: red;"><%= messageError %></p>
     <% } %>
     <% if (messageSuccess) { %>
         <p style="color: green;"><%= messageSuccess %></p>
     <% } %>
-    <a href="/products/new">Adicionar Novo Produto</a>
     <ul>
         <% products.forEach(product => { %>
             <li>
-                <%= product.name %> - Fornecedor: <%= product.Supplier ? product.Supplier.name : 'Nenhum' %>
+                <%= product.name %> - R$ <%= product.sale_value.toFixed(2) %> - Quantidade: <%= product.inventory.quantity %>
+                <a href="/products/view/<%= product.id %>">Visualizar</a>
                 <a href="/products/edit/<%= product.id %>">Editar</a>
                 <form action="/products/delete/<%= product.id %>" method="POST" style="display:inline;">
-                    <button type="submit">Excluir</button>
+                    <button type="submit">Deletar</button>
                 </form>
             </li>
-        <% }); %>
+        <% }) %>
     </ul>
+    <a href="/products/create">Adicionar Produto</a>
+    <a href="/dashboard">Voltar</a>
 </body>
 </html>

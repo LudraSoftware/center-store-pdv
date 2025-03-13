@@ -1,3 +1,4 @@
+<!-- 📌 products/edit.ejs -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -13,18 +14,17 @@
     <% } %>
     <form action="/products/edit/<%= product.id %>" method="POST">
         <input type="text" name="name" value="<%= product.name %>" required>
-        <input type="number" name="cost_value" value="<%= product.cost_value %>" required step="0.01">
-        <input type="number" name="sale_value" value="<%= product.sale_value %>" required step="0.01">
-        <label>Fornecedor (opcional):
-            <select name="supplier_id">
-                <option value="">Nenhum</option>
-                <% suppliers.forEach(supplier => { %>
-                    <option value="<%= supplier.id %>" <%= product.supplier_id === supplier.id ? 'selected' : '' %>><%= supplier.name %></option>
-                <% }); %>
-            </select>
-        </label>
+        <select name="supplier_id">
+            <option value="">Selecione um Fornecedor</option>
+            <% suppliers.forEach(supplier => { %>
+                <option value="<%= supplier.id %>" <%= supplier.id === product.supplier_id ? 'selected' : '' %>><%= supplier.name %></option>
+            <% }) %>
+        </select>
+        <input type="number" name="cost_value" value="<%= product.cost_value %>" required>
+        <input type="number" name="sale_value" value="<%= product.sale_value %>" required>
+        <input type="number" name="quantity" value="<%= product.inventory.quantity %>" required>
         <button type="submit">Salvar Alterações</button>
     </form>
-    <a href="/products">Voltar para lista</a>
+    <a href="/products">Voltar</a>
 </body>
 </html>

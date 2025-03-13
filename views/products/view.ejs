@@ -1,0 +1,15 @@
+<!-- 📌 products/view.ejs -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Detalhes do Produto</title>
+</head>
+<body>
+    <h2>Produto: <%= product.name %></h2>
+    <p>Fornecedor: <%= product.supplier ? product.supplier.name : 'Sem fornecedor' %></p>
+    <p>Valor de Custo: R$ <%= product.cost_value.toFixed(2) %></p>
+    <p>Valor de Venda: R$ <%= product.sale_value.toFixed(2) %></p>
+    <p>Quantidade em Estoque: <%= product.inventory.quantity %></p>
+    <a href="/products">Voltar</a>
+</body>
+</html>

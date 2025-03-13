@@ -1,98 +1,154 @@
-const express = require('express');
-const db = require('../models'); // Importa o banco de dados corretamente
-const { ensureAuthenticated, ensureAdmin  } = require('../middlewares/auth');
-
+const express = require("express");
 const router = express.Router();
+const { Product, Supplier, Inventory } = require("../models");
 
-// Listar todos os produtos
-router.get('/products', ensureAuthenticated, ensureAdmin , async (req, res) => {
+const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
+
+// 📌 Listar produtos
+router.get("/", ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
-    const products = await db.Product.findAll({ include: db.Supplier });
-    res.render('products/list', { products, messageError: req.flash('error'), messageSuccess: req.flash('success') });
+    const products = await Product.findAll({
+      attributes: ["id", "name", "cost_value", "sale_value"],
+      include: [
+        { model: Supplier, as: "supplier", attributes: ["name"] }, // 🔹 Certifique-se que o alias é 'supplier'
+        { model: Inventory, as: "inventory", attributes: ["quantity"] }, // 🔹 Usa 'inventory' como definido no model
+      ],
+    });
+
+    res.render("products/list", {
+      products,
+      messageError: req.flash("error"),
+      messageSuccess: req.flash("success"),
+    });
   } catch (err) {
-    console.error('❌ Erro ao listar produtos:', err);
-    req.flash('error', 'Erro ao listar produtos.');
-    res.redirect('/');
+    console.error("❌ Erro ao listar produtos:", err);
+    req.flash("error", "Erro ao listar produtos.");
+    res.redirect("/dashboard");
   }
 });
 
-// Página de cadastro de produto
-router.get('/products/new', ensureAuthenticated, ensureAdmin , async (req, res) => {
+// 📌 Página de criação de produto
+router.get("/create", ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
-    const suppliers = await db.Supplier.findAll();
-    res.render('products/new', { suppliers, messageError: req.flash('error'), messageSuccess: req.flash('success') });
+    const suppliers = await Supplier.findAll({ attributes: ["id", "name"] });
+    res.render("products/create", {
+      suppliers,
+      messageError: req.flash("error"),
+      messageSuccess: req.flash("success"),
+    });
   } catch (err) {
-    console.error('❌ Erro ao carregar fornecedores:', err);
-    req.flash('error', 'Erro ao carregar fornecedores.');
-    res.redirect('/products');
+    console.error("❌ Erro ao carregar fornecedores:", err);
+    req.flash("error", "Erro ao carregar fornecedores.");
+    res.redirect("/products");
   }
 });
 
-// Cadastro de produto
-router.post('/products', ensureAuthenticated, ensureAdmin , async (req, res) => {
-  const { name, supplier_id, cost_value, sale_value } = req.body;
+// 📌 Criar um produto
+router.post("/create", ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
-    await db.Product.create({ name, supplier_id: supplier_id || null, cost_value, sale_value });
-    req.flash('success', 'Produto cadastrado com sucesso!');
-    res.redirect('/products');
+    const { name, supplier_id, cost_value, sale_value, quantity } = req.body;
+    const product = await Product.create({
+      name,
+      supplier_id,
+      cost_value,
+      sale_value,
+    });
+    await Inventory.create({ product_id: product.id, quantity });
+    req.flash("success", "Produto cadastrado com sucesso!");
+    res.redirect("/products");
   } catch (err) {
-    console.error('❌ Erro ao cadastrar produto:', err);
-    req.flash('error', 'Erro ao cadastrar produto.');
-    res.redirect('/products/new');
+    console.error("❌ Erro ao criar produto:", err);
+    req.flash("error", "Erro ao cadastrar produto.");
+    res.redirect("/products/create");
   }
 });
 
-// Página de edição de produto
-router.get('/products/edit/:id', ensureAuthenticated, ensureAdmin , async (req, res) => {
+// 📌 Página de edição de produto
+router.get("/edit/:id", ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
-    const product = await db.Product.findByPk(req.params.id, { include: db.Supplier });
-    const suppliers = await db.Supplier.findAll();
+    const product = await Product.findByPk(req.params.id, {
+      include: [{ model: Inventory, as: "inventory" }],
+    });
+    const suppliers = await Supplier.findAll({ attributes: ["id", "name"] });
     if (!product) {
-      req.flash('error', 'Produto não encontrado!');
-      return res.redirect('/products');
+      req.flash("error", "Produto não encontrado.");
+      return res.redirect("/products");
     }
-    res.render('products/edit', { product, suppliers, messageError: req.flash('error'), messageSuccess: req.flash('success') });
+    res.render("products/edit", {
+      product,
+      suppliers,
+      messageError: req.flash("error"),
+      messageSuccess: req.flash("success"),
+    });
   } catch (err) {
-    console.error('❌ Erro ao buscar produto:', err);
-    req.flash('error', 'Erro ao buscar produto.');
-    res.redirect('/products');
+    console.error("❌ Erro ao buscar produto:", err);
+    req.flash("error", "Erro ao buscar produto.");
+    res.redirect("/products");
   }
 });
 
-// Atualização de produto
-router.post('/products/edit/:id', ensureAuthenticated, ensureAdmin , async (req, res) => {
-  const { name, supplier_id, cost_value, sale_value } = req.body;
+// 📌 Atualizar produto
+router.post("/edit/:id", ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
-    const product = await db.Product.findByPk(req.params.id);
-    if (!product) {
-      req.flash('error', 'Produto não encontrado!');
-      return res.redirect('/products');
-    }
-    await product.update({ name, supplier_id: supplier_id || null, cost_value, sale_value });
-    req.flash('success', 'Produto atualizado com sucesso!');
-    res.redirect('/products');
+    const { name, supplier_id, cost_value, sale_value, quantity } = req.body;
+    await Product.update(
+      { name, supplier_id, cost_value, sale_value },
+      { where: { id: req.params.id } }
+    );
+    await Inventory.update(
+      { quantity },
+      { where: { product_id: req.params.id } }
+    );
+    req.flash("success", "Produto atualizado com sucesso!");
+    res.redirect("/products");
   } catch (err) {
-    console.error('❌ Erro ao atualizar produto:', err);
-    req.flash('error', 'Erro ao atualizar produto.');
+    console.error("❌ Erro ao atualizar produto:", err);
+    req.flash("error", "Erro ao atualizar produto.");
     res.redirect(`/products/edit/${req.params.id}`);
   }
 });
 
-// Exclusão de produto
-router.post('/products/delete/:id', ensureAuthenticated, ensureAdmin , async (req, res) => {
-  try {
-    const product = await db.Product.findByPk(req.params.id);
-    if (!product) {
-      req.flash('error', 'Produto não encontrado!');
-      return res.redirect('/products');
+// 📌 Deletar produto
+router.post(
+  "/delete/:id",
+  ensureAuthenticated,
+  ensureAdmin,
+  async (req, res) => {
+    try {
+      await Inventory.destroy({ where: { product_id: req.params.id } }); // 🔹 Remove do estoque antes
+      await Product.destroy({ where: { id: req.params.id } });
+      req.flash("success", "Produto deletado com sucesso!");
+      res.redirect("/products");
+    } catch (err) {
+      console.error("❌ Erro ao deletar produto:", err);
+      req.flash("error", "Erro ao deletar produto.");
+      res.redirect("/products");
     }
-    await product.destroy();
-    req.flash('success', 'Produto excluído com sucesso!');
-    res.redirect('/products');
+  }
+);
+
+// 📌 Visualizar produto e quantidade em estoque
+router.get("/view/:id", ensureAuthenticated, ensureAdmin, async (req, res) => {
+  try {
+    const product = await Product.findByPk(req.params.id, {
+      include: [
+        { model: Supplier, as: "supplier" },
+        { model: Inventory, as: "inventory" },
+      ],
+    });
+    if (!product) {
+      req.flash("error", "Produto não encontrado.");
+      return res.redirect("/products");
+    }
+    res.render("products/view", {
+      product,
+      messageError: req.flash("error"),
+      messageSuccess: req.flash("success"),
+    });
   } catch (err) {
-    console.error('❌ Erro ao excluir produto:', err);
-    req.flash('error', 'Erro ao excluir produto.');
-    res.redirect('/products');
+    console.error("❌ Erro ao visualizar produto:", err);
+    req.flash("error", "Erro ao visualizar produto.");
+    res.redirect("/products");
   }
 });
 
