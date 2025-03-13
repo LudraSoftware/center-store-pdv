@@ -23,30 +23,66 @@ module.exports = {
     await queryInterface.createTable("supplier", {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       name: { type: Sequelize.STRING, allowNull: false },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal(
+          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        ),
+      },
     });
 
-    await queryInterface.createTable('product', {
+    await queryInterface.createTable("product", {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       name: { type: Sequelize.STRING, allowNull: false },
-      supplier_id: { 
-        type: Sequelize.INTEGER, 
-        references: { model: 'supplier', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+      supplier_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "supplier", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
       cost_value: { type: Sequelize.FLOAT, allowNull: false },
-      sale_value: { type: Sequelize.FLOAT, allowNull: false }
+      sale_value: { type: Sequelize.FLOAT, allowNull: false },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal(
+          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        ),
+      },
     });
 
-    await queryInterface.createTable('inventory', {
+    await queryInterface.createTable("inventory", {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-      product_id: { 
-        type: Sequelize.INTEGER, 
-        references: { model: 'product', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+      product_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "product", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 }
+      quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal(
+          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        ),
+      },
     });
 
     await queryInterface.createTable("customer_info", {
@@ -120,8 +156,8 @@ module.exports = {
         ),
       },
     });
-    
-    await queryInterface.createTable('invoice', {
+
+    await queryInterface.createTable("invoice", {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       discount: { type: Sequelize.FLOAT, allowNull: true },
       pix_value: { type: Sequelize.FLOAT, allowNull: true },
@@ -129,62 +165,97 @@ module.exports = {
       debit_value: { type: Sequelize.FLOAT, allowNull: true },
       money_value: { type: Sequelize.FLOAT, allowNull: true },
       other_value: { type: Sequelize.FLOAT, allowNull: true },
-      other_desc: { type: Sequelize.STRING, allowNull: true }
+      other_desc: { type: Sequelize.STRING, allowNull: true },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal(
+          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        ),
+      },
     });
 
-    await queryInterface.createTable('sales', {
+    await queryInterface.createTable("sales", {
       id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-      invoice_id: { 
-        type: Sequelize.INTEGER, 
-        references: { model: 'invoice', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+      invoice_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "invoice", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      seller_id: { 
-        type: Sequelize.INTEGER, 
-        references: { model: 'user', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+      seller_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "user", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
-      customer_id: { 
-        type: Sequelize.INTEGER, 
-        references: { model: 'customer', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      }
+      customer_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "customer", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal(
+          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        ),
+      },
     });
 
-    await queryInterface.createTable('invoice_products', {
-      product_id: { 
-        type: Sequelize.INTEGER, 
-        references: { model: 'product', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+    await queryInterface.createTable("invoice_products", {
+      product_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "product", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      invoice_id: { 
-        type: Sequelize.INTEGER, 
-        references: { model: 'invoice', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+      invoice_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "invoice", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 1 }
+      quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 1 },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal(
+          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        ),
+      },
     });
-
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('invoice_products');
-    await queryInterface.dropTable('sales');
-    await queryInterface.dropTable('invoice');
+    await queryInterface.dropTable("invoice_products");
+    await queryInterface.dropTable("sales");
+    await queryInterface.dropTable("invoice");
 
-    await queryInterface.dropTable('customer');
-    await queryInterface.dropTable('customer_info');
-    await queryInterface.dropTable('customer_address');
+    await queryInterface.dropTable("customer");
+    await queryInterface.dropTable("customer_info");
+    await queryInterface.dropTable("customer_address");
 
-    await queryInterface.dropTable('inventory');
-    await queryInterface.dropTable('product');
-    await queryInterface.dropTable('supplier');
+    await queryInterface.dropTable("inventory");
+    await queryInterface.dropTable("product");
+    await queryInterface.dropTable("supplier");
 
-    await queryInterface.dropTable('user');
-}
+    await queryInterface.dropTable("user");
+  },
 };

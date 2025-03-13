@@ -28,7 +28,7 @@ module.exports = (sequelize) => {
     modelName: 'Sales',
     tableName: 'sales',
     freezeTableName: true,
-    timestamps: false
+    timestamps: true
   });
 
   return Sales;

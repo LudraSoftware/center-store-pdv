@@ -15,7 +15,7 @@ module.exports = (sequelize) => {
     modelName: 'CustomerAddress', 
     tableName: 'customer_address',
     freezeTableName: true,
-    timestamps: false
+    timestamps: true
   });
 
   return CustomerAddress;
