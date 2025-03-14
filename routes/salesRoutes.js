@@ -6,6 +6,64 @@ const { Invoice, Sales, InvoiceProducts, Product, Inventory, User, Customer } = 
 
 const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
 
+// 📌 Listagem de Vendas
+router.get("/", async (req, res) => {
+    try {
+        const sales = await Sales.findAll({
+            include: [
+                { model: User, as: "seller", attributes: ["id", "name"] },
+                { model: Customer, as: "customer", attributes: ["id", "name"] },
+                { 
+                    model: Invoice, 
+                    as: "invoice",
+                    attributes: ["id", "discount", "money_value", "pix_value", "credit_value", "debit_value", "other_value", "createdAt"]
+                }
+            ],
+            order: [["createdAt", "DESC"]],
+        });
+
+        res.render("sales/list", { sales });
+    } catch (error) {
+        console.error("❌ Erro ao listar vendas:", error);
+        res.status(500).send("Erro ao carregar vendas.");
+    }
+});
+
+// 📌 Visualizar detalhes da venda
+router.get("/view/:id", async (req, res) => {
+    try {
+        const sale = await Sales.findByPk(req.params.id, {
+            include: [
+                { model: User, as: "seller", attributes: ["id", "name"] },
+                { model: Customer, as: "customer", attributes: ["id", "name"] },
+                { 
+                    model: Invoice,
+                    as: "invoice",
+                    attributes: ["id", "discount", "money_value", "pix_value", "credit_value", "debit_value", "other_value", "createdAt"],
+                    include: [
+                        {
+                            model: InvoiceProducts, // ✅ Associação corrigida
+                            as: "invoiceProducts", // ✅ Usando o alias correto
+                            include: [
+                                { model: Product, as: "product", attributes: ["id", "name", "cost_value", "sale_value"] }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if (!sale) {
+            return res.status(404).send("Venda não encontrada.");
+        }
+
+        res.render("sales/view", { sale });
+    } catch (error) {
+        console.error("❌ Erro ao visualizar venda:", error);
+        res.status(500).send("Erro ao carregar detalhes da venda.");
+    }
+});
+
 // 🔹 Página do checkout
 router.get('/checkout', async (req, res) => {
     try {

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Detalhes da Venda</title>
+</head>
+<body>
+    <h2>Detalhes da Venda - ID <%= sale.id %></h2>
+
+    <h3>Informações Gerais</h3>
+    <p><strong>Vendedor:</strong> <%= sale.seller ? sale.seller.name : "N/A" %></p>
+    <p><strong>Cliente:</strong> <%= sale.customer ? sale.customer.name : "N/A" %></p>
+    <p><strong>Data da Venda:</strong> <%= sale.createdAt.toLocaleDateString("pt-BR") %></p>
+
+    <h3>Nota Fiscal</h3>
+    <% if (sale.invoice) { %>
+        <p><strong>Desconto:</strong> R$ <%= sale.invoice.discount.toFixed(2) %></p>
+        <p><strong>Pagamento PIX:</strong> R$ <%= sale.invoice.pix_value.toFixed(2) %></p>
+        <p><strong>Cartão de Crédito:</strong> R$ <%= sale.invoice.credit_value.toFixed(2) %></p>
+        <p><strong>Cartão de Débito:</strong> R$ <%= sale.invoice.debit_value.toFixed(2) %></p>
+        <p><strong>Dinheiro:</strong> R$ <%= sale.invoice.money_value.toFixed(2) %></p>
+        <p><strong>Outros:</strong> R$ <%= sale.invoice.other_value.toFixed(2) %></p>
+        <% if (sale.invoice.other_desc) { %>
+            <p><strong>Descrição do Pagamento:</strong> <%= sale.invoice.other_desc %></p>
+        <% } %>
+    <% } else { %>
+        <p><em>Nota fiscal não encontrada.</em></p>
+    <% } %>
+
+    <h3>Produtos da Venda</h3>
+    <% if (sale.invoice && sale.invoice.invoiceProducts.length > 0) { %>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Valor Unitário</th>
+                    <th>Valor Total</th>
+                    <th>Custo Unitário</th>
+                    <th>Lucro</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% sale.invoice.invoiceProducts.forEach(item => { %>
+                    <tr>
+                        <td><%= item.product ? item.product.name : "Produto não encontrado" %></td>
+                        <td><%= item.quantity %></td>
+                        <td>R$ <%= item.product ? item.product.sale_value.toFixed(2) : "N/A" %></td>
+                        <td>R$ <%= item.product ? (item.product.sale_value * item.quantity).toFixed(2) : "N/A" %></td>
+                        <td>R$ <%= item.product ? item.product.cost_value.toFixed(2) : "N/A" %></td>
+                        <td>R$ <%= item.product ? ((item.product.sale_value - item.product.cost_value) * item.quantity).toFixed(2) : "N/A" %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p><em>Não há produtos registrados nesta venda.</em></p>
+    <% } %>
+
+    <a href="/sales">Voltar</a>
+</body>
+</html>

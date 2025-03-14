@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Lista de Vendas</title>
+</head>
+<body>
+    <h2>Lista de Vendas</h2>
+
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Valor Total</th>
+            <th>Vendedor</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th>Ação</th>
+        </tr>
+        <% sales.forEach(sale => { %>
+            <tr>
+                <td><%= sale.id %></td>
+                <td>R$ <%= (
+                    (sale.invoice.money_value || 0) + 
+                    (sale.invoice.pix_value || 0) + 
+                    (sale.invoice.credit_value || 0) + 
+                    (sale.invoice.debit_value || 0) + 
+                    (sale.invoice.other_value || 0)
+                ).toFixed(2) %></td>
+                <td><%= sale.seller ? sale.seller.name : "N/A" %></td>
+                <td><%= sale.customer ? sale.customer.name : "N/A" %></td>
+                <td><%= new Date(sale.invoice.createdAt).toLocaleDateString() %></td>
+                <td><a href="/sales/view/<%= sale.id %>">Visualizar</a></td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <a href="/dashboard">Voltar</a>
+</body>
+</html>
