@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Checkout</title>
+</head>
+<body>
+    <h2>Checkout</h2>
+
+    <label for="customer">Cliente:</label>
+    <select id="customer" name="customer_id">
+        <option value="">Selecionar...</option>
+        <% customers.forEach(customer => { %>
+            <option value="<%= customer.id %>"><%= customer.name %></option>
+        <% }) %>
+    </select>
+
+    <label for="seller">Vendedor:</label>
+    <select id="seller" name="seller_id">
+        <option value="">Selecionar...</option>
+        <% sellers.forEach(seller => { %>
+            <option value="<%= seller.id %>"><%= seller.name %></option>
+        <% }) %>
+    </select>
+
+    <h3>Produtos</h3>
+    <table>
+        <tr>
+            <th>Nome</th>
+            <th>Estoque</th>
+            <th>Preço</th>
+            <th>Ação</th>
+        </tr>
+        <% products.forEach(product => { %>
+            <tr>
+                <td><%= product.name %></td>
+                <td><%= product.inventory ? product.inventory.quantity : 0 %></td>
+                <td>R$ <%= product.sale_value.toFixed(2) %></td>
+                <td>
+                    <button onclick="addProduct(<%= product.id %>, '<%= product.name %>', <%= product.sale_value %>, <%= product.inventory ? product.inventory.quantity : 0 %>)">
+                        Adicionar
+                    </button>
+                </td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <h3>Itens no Checkout</h3>
+    <table id="checkout-items"></table>
+
+    <h3 id="checkout-total">Total: R$ 0,00</h3>
+    <h3 id="remaining-amount">Faltante: R$ 0,00</h3>
+
+    <h3>Pagamentos</h3>
+    <button onclick="addPayment()">Adicionar Pagamento</button>
+    <div id="payments-list"></div>
+
+    <!-- 🔹 Descrição para o pagamento "Outros", inicialmente oculta -->
+    <div id="other-desc-container" style="display: none;"></div>
+
+    <h3>Desconto</h3>
+    <input type="number" id="discount" step="0.01" onchange="updateCheckout()">
+
+    <button id="finalize-sale" disabled onclick="finalizeSale()">Finalizar Compra</button>
+
+    <!-- 🔹 ✅ Importando o JavaScript do Checkout -->
+    <script src="/js/checkout.js"></script>
+</body>
+</html>

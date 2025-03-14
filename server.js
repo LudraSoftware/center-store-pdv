@@ -12,7 +12,8 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 // Middlewares
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json()); // ✅ Permite receber JSON no req.body
+app.use(express.urlencoded({ extended: true })); // ✅ Permite receber dados de formulários
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -27,6 +28,7 @@ app.use('/', require('./routes/authRoutes'));
 app.use('/suppliers', require('./routes/suppliersRoutes'));
 app.use('/products', require('./routes/productsRoutes'));
 app.use('/customers', require('./routes/customerRoutes'));
+app.use('/sales', require('./routes/salesRoutes'));
 
 // Iniciar servidor
 db.sequelize.sync().then(() => {

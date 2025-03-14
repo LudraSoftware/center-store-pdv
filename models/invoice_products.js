@@ -1,16 +1,19 @@
-// 📌 Model: invoice_products.js
+const { Model, DataTypes } = require("sequelize");
+
 module.exports = (sequelize) => {
     class InvoiceProducts extends Model {}
-  
+
     InvoiceProducts.init({
       product_id: { 
         type: DataTypes.INTEGER, 
+        primaryKey: true,  // ✅ Definindo como chave primária composta
         references: { model: 'product', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
       invoice_id: { 
         type: DataTypes.INTEGER, 
+        primaryKey: true,  // ✅ Definindo como chave primária composta
         references: { model: 'invoice', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
@@ -23,6 +26,6 @@ module.exports = (sequelize) => {
       freezeTableName: true,
       timestamps: true
     });
-  
+
     return InvoiceProducts;
-  };
+};

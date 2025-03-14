@@ -9,26 +9,41 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 });
 
 // Importar models corretamente
-const db = {};
+const User = require('./user')(sequelize);
+const Supplier = require('./supplier')(sequelize);
+const Product = require('./product')(sequelize);
+const CustomerInfo = require('./customer_info')(sequelize);
+const CustomerAddress = require('./customer_address')(sequelize);
+const Customer = require('./customer')(sequelize);
+const Invoice = require('./invoice')(sequelize);
+const InvoiceProducts = require('./invoice_products')(sequelize);
+const Sales = require('./sales')(sequelize);
+const Inventory = require('./inventory')(sequelize);
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+// 🔹 Criar as associações corretamente
+User.hasMany(Invoice, { foreignKey: 'seller_id' });
+Customer.hasMany(Invoice, { foreignKey: 'customer_id' });
 
-db.User = require('./user')(sequelize);
-db.Supplier = require('./supplier')(sequelize);
-db.Product = require('./product')(sequelize);
-db.Inventory = require('./inventory')(sequelize);
-db.CustomerInfo = require('./customer_info')(sequelize);
-db.CustomerAddress = require('./customer_address')(sequelize);
-db.Customer = require('./customer')(sequelize);
-db.Invoice = require('./invoice')(sequelize);
-db.Sales = require('./sales')(sequelize);
+Invoice.belongsTo(User, { foreignKey: 'seller_id' });
+Invoice.belongsTo(Customer, { foreignKey: 'customer_id' });
+Invoice.hasMany(InvoiceProducts, { foreignKey: 'invoice_id', onDelete: 'CASCADE' });
 
-// Criar as associações
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
+Product.belongsTo(Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
+Supplier.hasMany(Product, { foreignKey: 'supplier_id', as: 'products' });
+
+Sales.belongsTo(Product, { foreignKey: 'product_id' });
+Sales.belongsTo(Invoice, { foreignKey: 'invoice_id' });
+
+Inventory.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
+Product.hasOne(Inventory, { foreignKey: 'product_id', as: 'inventory' });
+
+// 🔹 Correção: Definindo associação entre Customer e CustomerInfo
+Customer.belongsTo(CustomerInfo, { foreignKey: 'info_id', as: 'customerInfo' });
+Customer.belongsTo(CustomerAddress, { foreignKey: 'address_id', as: 'customerAddress' });
+
+const db = { 
+    sequelize, Sequelize, User, Supplier, Product, CustomerInfo, CustomerAddress, 
+    Customer, Invoice, InvoiceProducts, Sales, Inventory 
+};
 
 module.exports = db;
