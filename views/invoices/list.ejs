@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Notas Fiscais</title>
+</head>
+<body>
+    <h2>Notas Fiscais</h2>
+
+    <table border="1">
+        <tr>
+            <th>ID da Venda</th>
+            <th>Cliente</th>
+            <th>CPF</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th>Vendedor</th>
+            <th>Valor Total</th>
+            <th>Data</th>
+            <th>Ação</th>
+        </tr>
+        <% invoices.forEach(sale => { %>
+            <tr>
+                <td><%= sale.id %></td>
+                <td><%= sale.customer ? sale.customer.name : "Não informado" %></td>
+                <td><%= sale.customer && sale.customer.customerInfo ? sale.customer.customerInfo.document : "Não informado" %></td>
+                <td><%= sale.customer && sale.customer.customerInfo ? sale.customer.customerInfo.phone_number : "Não informado" %></td>
+                <td><%= sale.customer && sale.customer.customerInfo ? sale.customer.customerInfo.email : "Não informado" %></td>
+                <td><%= sale.seller ? sale.seller.name : "Não informado" %></td>
+                <td>R$ <%= sale.invoice ? (sale.invoice.invoiceProducts.reduce((sum, prod) => sum + (prod.product.sale_value * prod.quantity), 0)).toFixed(2) : "0.00" %></td>
+                <td><%= new Date(sale.createdAt).toLocaleDateString() %></td>
+                <td><a href="/invoices/view/<%= sale.id %>">Ver</a></td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <a href="/dashboard">Voltar</a>
+</body>
+</html>

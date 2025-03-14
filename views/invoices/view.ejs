@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Detalhes da Nota Fiscal</title>
+</head>
+<body>
+    <h2>Nota Fiscal #<%= invoice.id %></h2>
+
+    <h3>Cliente</h3>
+    <p><strong>Nome:</strong> <%= invoice.customer ? invoice.customer.name : "Não informado" %></p>
+    <p><strong>CPF:</strong> <%= invoice.customer && invoice.customer.customerInfo ? invoice.customer.customerInfo.document : "Não informado" %></p>
+    <p><strong>Telefone:</strong> <%= invoice.customer && invoice.customer.customerInfo ? invoice.customer.customerInfo.phone_number : "Não informado" %></p>
+    <p><strong>Email:</strong> <%= invoice.customer && invoice.customer.customerInfo ? invoice.customer.customerInfo.email : "Não informado" %></p>
+
+    <h3>Produtos</h3>
+    <table border="1">
+        <tr>
+            <th>Nome</th>
+            <th>Quantidade</th>
+            <th>Valor Unitário</th>
+            <th>Subtotal</th>
+        </tr>
+        <% invoice.invoice.invoiceProducts.forEach(prod => { %>
+            <tr>
+                <td><%= prod.product.name %></td>
+                <td><%= prod.quantity %></td>
+                <td>R$ <%= prod.product.sale_value.toFixed(2) %></td>
+                <td>R$ <%= (prod.product.sale_value * prod.quantity).toFixed(2) %></td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <h3>Valor Total da Nota Fiscal</h3>
+    <p><strong>Total:</strong> R$ <%= invoice.invoice.invoiceProducts.reduce((sum, prod) => sum + (prod.product.sale_value * prod.quantity), 0).toFixed(2) %></p>
+
+    <h3>Data da Nota Fiscal</h3>
+    <p><%= new Date(invoice.createdAt).toLocaleDateString() %></p>
+
+    <a href="/invoices">Voltar</a>
+</body>
+</html>

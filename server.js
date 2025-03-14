@@ -29,6 +29,7 @@ app.use('/suppliers', require('./routes/suppliersRoutes'));
 app.use('/products', require('./routes/productsRoutes'));
 app.use('/customers', require('./routes/customerRoutes'));
 app.use('/sales', require('./routes/salesRoutes'));
+app.use('/invoices', require('./routes/invoiceRoutes'));
 
 // Iniciar servidor
 db.sequelize.sync().then(() => {

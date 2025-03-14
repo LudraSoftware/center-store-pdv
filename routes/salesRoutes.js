@@ -39,7 +39,7 @@ router.get("/view/:id", async (req, res) => {
                 { 
                     model: Invoice,
                     as: "invoice",
-                    attributes: ["id", "discount", "money_value", "pix_value", "credit_value", "debit_value", "other_value", "createdAt"],
+                    attributes: ["id", "discount", "money_value", "pix_value", "credit_value", "debit_value", "other_value", "other_desc",  "createdAt"],
                     include: [
                         {
                             model: InvoiceProducts, // ✅ Associação corrigida
@@ -72,7 +72,7 @@ router.get('/checkout', async (req, res) => {
         });
 
         const customers = await Customer.findAll();
-        const sellers = await User.findAll({ where: { type: 'admin' } });
+        const sellers = await User.findAll({ where: { type: 'seller' } });
 
         res.render('sales/checkout', {
             products,
@@ -92,7 +92,7 @@ router.get('/checkout', async (req, res) => {
 
 
 router.post('/checkout', async (req, res) => {
-    const { seller_id, customer_id, products, payments, discount } = req.body;
+    const { seller_id, customer_id, products, payments, discount, other_desc } = req.body;
 
     try {
         // 🔹 1️⃣ Verificar se o vendedor existe
@@ -163,7 +163,7 @@ router.post('/checkout', async (req, res) => {
                 debit_value: payments.find(p => p.type === "debit")?.value || 0,
                 money_value: payments.find(p => p.type === "money")?.value || 0,
                 other_value: payments.find(p => p.type === "other")?.value || 0,
-                other_desc: payments.find(p => p.type === "other")?.desc || "",
+                other_desc: other_desc ?? "",
             }, { transaction });
 
             console.log("✅ Invoice criada:", invoice.id);

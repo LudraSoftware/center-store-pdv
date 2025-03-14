@@ -26,15 +26,9 @@ const Inventory = require("./inventory")(sequelize);
 User.hasMany(Sales, { foreignKey: "seller_id", as: "sales" });
 Sales.belongsTo(User, { foreignKey: "seller_id", as: "seller" });
 
-User.hasMany(Invoice, { foreignKey: "seller_id", as: "invoices" });
-Invoice.belongsTo(User, { foreignKey: "seller_id", as: "seller" });
-
 // 🟢 Cliente
 Customer.hasMany(Sales, { foreignKey: "customer_id", as: "sales" });
 Sales.belongsTo(Customer, { foreignKey: "customer_id", as: "customer" });
-
-Customer.hasMany(Invoice, { foreignKey: "customer_id", as: "invoices" });
-Invoice.belongsTo(Customer, { foreignKey: "customer_id", as: "customer" });
 
 // 🟢 Associações com Informações do Cliente
 Customer.belongsTo(CustomerInfo, { foreignKey: "info_id", as: "customerInfo" });
@@ -58,6 +52,7 @@ Product.hasMany(InvoiceProducts, { foreignKey: "product_id", as: "invoiceProduct
 // 🟢 Vendas (Sales) vinculadas à Nota Fiscal
 Sales.belongsTo(Invoice, { foreignKey: "invoice_id", as: "invoice" });
 Invoice.hasMany(Sales, { foreignKey: "invoice_id", as: "sales" });
+
 
 // Exportando os models e a conexão Sequelize
 const db = {
