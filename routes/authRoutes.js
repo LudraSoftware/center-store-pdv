@@ -63,16 +63,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Página de dashboard (somente autenticado)
-router.get("/dashboard", (req, res) => {
-  res.render("dashboard", {
-    user: req.user,
-    messageError: req.flash("error"),
-    messageSuccess: req.flash("success"),
-    currentPage: 'dashboard'
-  });
-});
-
 // Logout
 router.get("/logout", (req, res) => {
   req.logout(() => {

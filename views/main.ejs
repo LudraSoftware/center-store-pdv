@@ -10,6 +10,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .sidebar-link.active {
             background-color: rgba(59, 130, 246, 0.1);
@@ -151,6 +152,10 @@
                 <a href="/suppliers" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'suppliers' ? 'active' : '' %>">
                     <i class="fas fa-truck w-5 mr-3"></i>
                     <span>Fornecedores</span>
+                </a>
+                <a href="/sales" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'sales' ? 'active' : '' %>">
+                    <i class="fas fa-file-invoice w-5 mr-3"></i>
+                    <span>Vendas</span>
                 </a>
                 <a href="/invoices" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'invoices' ? 'active' : '' %>">
                     <i class="fas fa-file-invoice w-5 mr-3"></i>

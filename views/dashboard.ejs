@@ -1,5 +1,5 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <!-- Card 1 -->
+    <!-- Card 1 - Vendas Hoje -->
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-blue-100 text-blue-600">
@@ -7,12 +7,12 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm text-gray-500">Vendas Hoje</p>
-                <p class="text-lg font-semibold">#</p>
+                <p class="text-lg font-semibold">R$ <%= todaySales.toFixed(2) %></p>
             </div>
         </div>
     </div>
 
-    <!-- Card 2 -->
+    <!-- Card 2 - Total de Clientes -->
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-green-100 text-green-600">
@@ -20,12 +20,12 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm text-gray-500">Clientes</p>
-                <p class="text-lg font-semibold">#</p>
+                <p class="text-lg font-semibold"><%= totalCustomers %></p>
             </div>
         </div>
     </div>
 
-    <!-- Card 3 -->
+    <!-- Card 3 - Total de Produtos -->
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
@@ -33,40 +33,289 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm text-gray-500">Produtos</p>
-                <p class="text-lg font-semibold">#</p>
+                <p class="text-lg font-semibold"><%= totalProducts %></p>
             </div>
         </div>
     </div>
 
-    <!-- Card 4 -->
+    <!-- Card 4 - Lucro Total do Mês -->
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                <i class="fas fa-file-invoice text-2xl"></i>
+                <i class="fas fa-dollar-sign text-2xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-sm text-gray-500">Notas Emitidas</p>
-                <p class="text-lg font-semibold">#</p>
+                <p class="text-sm text-gray-500">Lucro do Dia</p>
+                <p class="text-lg font-semibold text-green-600">R$ <%= dailyProfit.toFixed(2) %></p>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Charts Area -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Chart 1 -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Vendas por Período -->
     <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Vendas por Período</h3>
-        <div class="h-64 flex items-center justify-center bg-gray-50 rounded">
-            <p class="text-gray-500">Área reservada para gráfico de vendas</p>
+        <div class="relative w-full h-64">
+            <canvas id="salesChart"></canvas>
         </div>
     </div>
 
-    <!-- Chart 2 -->
+    <!-- Top Vendedores -->
     <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Produtos Mais Vendidos</h3>
-        <div class="h-64 flex items-center justify-center bg-gray-50 rounded">
-            <p class="text-gray-500">Área reservada para gráfico de produtos</p>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Vendedores do Mês</h3>
+        <div class="relative w-full h-64">
+            <canvas id="sellersChart"></canvas>
         </div>
     </div>
 </div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Produtos Mais Vendidos -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Produtos Mais Vendidos</h3>
+        <div class="relative w-full h-64">
+            <canvas id="productsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Clientes que Mais Compraram -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Clientes do Mês</h3>
+        <div class="relative w-full h-64">
+            <canvas id="customersChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Chart data
+    const chartData = {
+        sales: {
+            labels: <%- JSON.stringify(salesData.labels) %>,
+            values: <%- JSON.stringify(salesData.values) %>
+        },
+        sellers: {
+            labels: <%- JSON.stringify(sellersData.labels) %>,
+            values: <%- JSON.stringify(sellersData.values) %>
+        },
+        products: {
+            labels: <%- JSON.stringify(productsData.labels) %>,
+            values: <%- JSON.stringify(productsData.values) %>
+        },
+        customers: {
+            labels: <%- JSON.stringify(customersData.labels) %>,
+            values: <%- JSON.stringify(customersData.values) %>
+        }
+    };
+
+    // Chart instances
+    let charts = {
+        sales: null,
+        sellers: null,
+        products: null,
+        customers: null
+    };
+
+    // Chart colors for dark/light mode
+    function getChartColors() {
+        const isDark = document.documentElement.classList.contains('dark');
+        return {
+            text: isDark ? '#e5e5e5' : '#1a1a1a',
+            grid: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+            background: isDark ? '#2d2d2d' : '#ffffff'
+        };
+    }
+
+    // Base chart options
+    function getBaseOptions() {
+        const colors = getChartColors();
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: colors.grid
+                    },
+                    ticks: {
+                        color: colors.text
+                    }
+                },
+                y: {
+                    grid: {
+                        color: colors.grid
+                    },
+                    ticks: {
+                        color: colors.text
+                    }
+                }
+            }
+        };
+    }
+
+    // Create charts
+    function createCharts() {
+        const options = getBaseOptions();
+
+        // Destroy existing charts
+        Object.values(charts).forEach(chart => {
+            if (chart) chart.destroy();
+        });
+
+        // Sales Chart
+        const salesCtx = document.getElementById('salesChart');
+        if (salesCtx) {
+            charts.sales = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: chartData.sales.labels,
+                    datasets: [{
+                        label: 'Vendas',
+                        data: chartData.sales.values,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...options,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: getChartColors().text
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Sellers Chart
+        const sellersCtx = document.getElementById('sellersChart');
+        if (sellersCtx) {
+            charts.sellers = new Chart(sellersCtx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.sellers.labels,
+                    datasets: [{
+                        label: 'Vendas (R$)',
+                        data: chartData.sellers.values,
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }]
+                },
+                options
+            });
+        }
+
+        // Products Chart
+        const productsCtx = document.getElementById('productsChart');
+        if (productsCtx) {
+            charts.products = new Chart(productsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartData.products.labels,
+                    datasets: [{
+                        data: chartData.products.values,
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#10b981',
+                            '#f59e0b',
+                            '#ef4444',
+                            '#8b5cf6'
+                        ]
+                    }]
+                },
+                options: {
+                    ...options,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                color: getChartColors().text
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Customers Chart
+        const customersCtx = document.getElementById('customersChart');
+        if (customersCtx) {
+            charts.customers = new Chart(customersCtx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.customers.labels,
+                    datasets: [{
+                        label: 'Compras (R$)',
+                        data: chartData.customers.values,
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 4,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    ...options,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            grid: {
+                                color: getChartColors().grid
+                            },
+                            ticks: {
+                                color: getChartColors().text
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: getChartColors().text
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Update chart themes
+    function updateChartsTheme() {
+        const options = getBaseOptions();
+        Object.values(charts).forEach(chart => {
+            if (chart) {
+                chart.options = { ...chart.options, ...options };
+                chart.update('none');
+            }
+        });
+    }
+
+    // Initialize charts when DOM is ready
+    document.addEventListener('DOMContentLoaded', createCharts);
+
+    // Update charts on theme change
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        setTimeout(updateChartsTheme, 100);
+    });
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        Object.values(charts).forEach(chart => {
+            if (chart) chart.destroy();
+        });
+    });
+</script>

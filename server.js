@@ -47,6 +47,7 @@ app.use(passport.session());
 
 // Rotas
 app.use('/', require('./routes/authRoutes'));
+app.use('/dashboard', require('./routes/dashboardRoutes'));
 app.use('/suppliers', require('./routes/suppliersRoutes'));
 app.use('/products', require('./routes/productsRoutes'));
 app.use('/customers', require('./routes/customerRoutes'));
@@ -55,5 +56,5 @@ app.use('/invoices', require('./routes/invoiceRoutes'));
 
 // Iniciar servidor
 db.sequelize.sync().then(() => {
-  app.listen(3000, () => console.log('🔥 Servidor rodando em http://localhost:3000'));
+  app.listen(5000, () => console.log('🔥 Servidor rodando em http://localhost:3000'));
 });
