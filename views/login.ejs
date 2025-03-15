@@ -1,11 +1,50 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - <%= company.name %></title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Dark mode styles */
+        .dark {
+            color-scheme: dark;
+        }
+        
+        .dark body {
+            background-color: #1a1a1a;
+            color: #e5e5e5;
+        }
+
+        .dark .bg-white {
+            background-color: #2d2d2d;
+        }
+
+        .dark .text-gray-500,
+        .dark .text-gray-600 {
+            color: #a3a3a3;
+        }
+
+        .dark .text-gray-700,
+        .dark .text-gray-800 {
+            color: #e5e5e5;
+        }
+
+        .dark input {
+            background-color: #363636;
+            border-color: #404040;
+            color: #e5e5e5;
+        }
+
+        .dark input::placeholder {
+            color: #666666;
+        }
+
+        .dark .shadow-lg {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
@@ -19,6 +58,10 @@
             </div>
             <h2 class="text-3xl font-bold text-gray-800"><%= company.name %></h2>
             <p class="text-gray-600 mt-2">Faça login para continuar</p>
+            <button id="theme-toggle" class="mt-4 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                <i class="fas fa-moon text-gray-600 dark:hidden"></i>
+                <i class="fas fa-sun text-yellow-500 hidden dark:inline"></i>
+            </button>
         </div>
 
         <% if (messageError && messageError != "") { %>
@@ -76,5 +119,37 @@
             </p>
         </div>
     </div>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference or system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // Set initial theme
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            html.classList.add('dark');
+        }
+        
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!localStorage.getItem('theme')) {
+                if (e.matches) {
+                    html.classList.add('dark');
+                } else {
+                    html.classList.remove('dark');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
