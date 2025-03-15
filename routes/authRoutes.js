@@ -14,7 +14,7 @@ router.get("/login", (req, res) =>
   res.render("login", {
     messageError: req.flash("error"),
     messageSuccess: req.flash("success"),
-    layout: false,Name: process.env.EMPLOYMENT_NAME
+    layout: false, Name: process.env.EMPLOYMENT_NAME
   })
 );
 

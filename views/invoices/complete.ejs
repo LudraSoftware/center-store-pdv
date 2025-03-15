@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DANFE - NF-e #<%= invoice.id %></title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 8pt;
+            line-height: 1.3;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .border-box {
+            border: 1px solid #000;
+            padding: 3px;
+            margin-bottom: 2px;
+        }
+
+        .header {
+            display: grid;
+            grid-template-columns: 25% 50% 25%;
+            border: 1px solid #000;
+            margin-bottom: 2px;
+        }
+
+        .logo {
+            padding: 10px;
+            text-align: center;
+            font-size: 24pt;
+            font-weight: bold;
+            border-right: 1px solid #000;
+        }
+
+        .company-info {
+            padding: 5px;
+            text-align: center;
+            border-right: 1px solid #000;
+        }
+
+        .nfe-info {
+            padding: 5px;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-gap: 2px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .field {
+            border: 1px solid #000;
+            padding: 3px;
+        }
+
+        .field-label {
+            font-size: 6pt;
+            text-transform: uppercase;
+            color: #333;
+        }
+
+        .field-value {
+            font-weight: bold;
+            font-size: 8pt;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 3px;
+            font-size: 8pt;
+        }
+
+        th {
+            background: #f0f0f0;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 6pt;
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: #45a049;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .print-button {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.print()" class="print-button">
+        <i class="fas fa-print"></i> Imprimir DANFE
+    </button>
+
+    <div class="container">
+        <!-- Recebimento -->
+        <div class="border-box">
+            <div style="display: flex; justify-content: space-between;">
+                <div style="width: 70%;">
+                    <div class="field-label">RECEBEMOS DE <%= company.name %> OS PRODUTOS/SERVIÇOS CONSTANTES NA NOTA FISCAL INDICADA AO LADO</div>
+                    <div style="height: 30px;"></div>
+                    <div class="field-label">DATA DE RECEBIMENTO: <%= new Date(invoice.createdAt).toLocaleTimeString('pt-BR') %></div>
+                </div>
+                <div style="width: 29%; border-left: 1px solid #000; padding-left: 5px;">
+                    <div class="field-label">NF-e</div>
+                    <div class="field-value">Nº <%= invoice.id.toString().padStart(9, '0') %></div>
+                    <div class="field-value">SÉRIE: 1</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Header -->
+        <div class="header">
+            <div class="logo">LOGO</div>
+            <div class="company-info">
+                <div style="font-size: 12pt; font-weight: bold; margin-bottom: 5px;"><%= company.name %></div>
+                <div><%= company.address.street %>, <%= company.address.number %></div>
+                <div><%= company.address.neighborhood %> - <%= company.address.city %>/<%= company.address.state %></div>
+                <div>CEP: <%= company.address.postal_code %></div>
+                <div>CNPJ: <%= company.document %></div>
+            </div>
+            <div class="nfe-info">
+                <div style="font-weight: bold; margin-bottom: 5px;">DANFE</div>
+                <div>DOCUMENTO AUXILIAR DA NOTA FISCAL ELETRÔNICA</div>
+                <div>0 - ENTRADA</div>
+                <div>1 - SAÍDA</div>
+                <div>Nº <%= invoice.id.toString().padStart(9, '0') %></div>
+                <div>SÉRIE: 1</div>
+                <div>FOLHA 1 de 1</div>
+            </div>
+        </div>
+
+        <!-- Nature of Operation -->
+        <div class="border-box">
+            <div class="field-label">NATUREZA DA OPERAÇÃO</div>
+            <div class="field-value">VENDA DE MERCADORIA</div>
+        </div>
+
+        <!-- Recipient Info -->
+        <div class="border-box">
+            <div class="field-label">DESTINATÁRIO/REMETENTE</div>
+            <table>
+                <tr>
+                    <td style="width: 60%">
+                        <div class="field-label">NOME/RAZÃO SOCIAL</div>
+                        <div class="field-value"><%= invoice.customer ? invoice.customer.name : "Não informado" %></div>
+                    </td>
+                    <td style="width: 40%">
+                        <div class="field-label">CNPJ/CPF</div>
+                        <div class="field-value"><%= invoice.customer?.customerInfo?.document || "Não informado" %></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="field-label">ENDEREÇO</div>
+                        <div class="field-value"><%= invoice.customer?.customerAddress?.street || "Não informado" %></div>
+                    </td>
+                    <td>
+                        <div class="field-label">BAIRRO/DISTRITO</div>
+                        <div class="field-value"><%= invoice.customer?.customerAddress?.neighborhood || "Não informado" %></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="field-label">MUNICÍPIO</div>
+                        <div class="field-value"><%= invoice.customer?.customerAddress?.city || "Não informado" %></div>
+                    </td>
+                    <td>
+                        <div class="field-label">UF</div>
+                        <div class="field-value"><%= invoice.customer?.customerAddress?.state || "XX" %></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Products Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>CÓDIGO</th>
+                    <th>DESCRIÇÃO DOS PRODUTOS</th>
+                    <th>QTD</th>
+                    <th>VALOR UNIT.</th>
+                    <th>VALOR TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (invoice.invoice?.invoiceProducts) { %>
+                    <% invoice.invoice.invoiceProducts.forEach(item => { %>
+                        <tr>
+                            <td class="text-center"><%= item.product.id %></td>
+                            <td><%= item.product.name %></td>
+                            <td class="text-center"><%= item.quantity %></td>
+                            <td class="text-right">R$ <%= item.product.sale_value.toFixed(2) %></td>
+                            <td class="text-right">R$ <%= (item.product.sale_value * item.quantity).toFixed(2) %></td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-right" style="font-weight: bold;">VALOR TOTAL:</td>
+                    <td class="text-right" style="font-weight: bold;">R$ <%= invoice.invoice ? invoice.invoice.invoiceProducts.reduce((sum, item) => 
+                        sum + (item.product.sale_value * item.quantity), 0).toFixed(2) : '0,00' %></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Additional Data -->
+        <div class="border-box">
+            <div class="field-label">DADOS ADICIONAIS</div>
+            <div class="field-value">
+                Documento emitido em <%= new Date(invoice.createdAt).toLocaleDateString('pt-BR') %> às 
+                <%= new Date(invoice.createdAt).toLocaleTimeString('pt-BR') %><br>
+                Vendedor: <%= invoice.seller ? invoice.seller.name : "Não informado" %>
+            </div>
+        </div>
+    </div>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</body>
+</html>

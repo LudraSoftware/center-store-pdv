@@ -12,9 +12,14 @@
                 }) %>
             </span>
         </h2>
-        <a href="/invoices" class="text-gray-600 hover:text-gray-800 transition-colors">
-            <i class="fas fa-arrow-left mr-2"></i>Voltar
-        </a>
+        <div class="flex space-x-4">
+            <a href="/invoices/complete/<%= invoice.id %>" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors">
+                <i class="fas fa-file-alt mr-2"></i>Visualizar Nota Completa
+            </a>
+            <a href="/invoices" class="text-gray-600 hover:text-gray-800 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Voltar
+            </a>
+        </div>
     </div>
 
     <!-- Print Header -->
@@ -130,12 +135,5 @@
                 </tfoot>
             </table>
         </div>
-    </div>
-
-    <!-- Botões de Ação -->
-    <div class="flex justify-end space-x-4 no-print">
-        <button onclick="printInvoice()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-            <i class="fas fa-print mr-2"></i>Imprimir
-        </button>
     </div>
 </div>
