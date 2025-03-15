@@ -56,5 +56,5 @@ app.use('/invoices', require('./routes/invoiceRoutes'));
 
 // Iniciar servidor
 db.sequelize.sync().then(() => {
-  app.listen(5000, () => console.log('🔥 Servidor rodando em http://localhost:3000'));
+  app.listen(3000, () => console.log('🔥 Servidor rodando em http://localhost:3000'));
 });
