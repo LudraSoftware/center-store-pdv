@@ -7,9 +7,31 @@ const db = require('./models');
 
 const app = express();
 
+const expressLayouts = require('express-ejs-layouts');
+
 // Configuração do EJS
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+app.use(expressLayouts);
+app.set('layout', 'main');
+
+app.use((req, res, next) => {
+  res.locals.company = {
+      name: process.env.EMPLOYMENT_NAME,
+      email: process.env.EMPLOYMENT_EMAIL,
+      logoVertical: process.env.EMPLOYMENT_LOGO_V,
+      logoHorizontal: process.env.EMPLOYMENT_LOGO_H,
+      address: {
+          street: process.env.EMPLOYMENT_ADDRESS_STREET,
+          number: process.env.EMPLOYMENT_ADDRESS_NUMBER,
+          city: process.env.EMPLOYMENT_ADDRESS_CITY,
+          neighborhood: process.env.EMPLOYMENT_ADDRESS_NEIGHBORHOOD,
+          state: process.env.EMPLOYMENT_ADDRESS_STATE,
+          country: process.env.EMPLOYMENT_ADDRESS_COUNTRY
+      }
+  };
+  next();
+});
 
 // Middlewares
 app.use(express.json()); // ✅ Permite receber JSON no req.body

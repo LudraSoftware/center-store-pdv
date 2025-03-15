@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
             order: [["createdAt", "DESC"]]
         });
 
-        res.render("invoices/list", { invoices });
+        res.render("invoices/list", { invoices, currentPage: 'invoices' });
     } catch (error) {
         console.error("❌ Erro ao listar notas fiscais:", error);
         res.status(500).send("Erro ao listar notas fiscais.");
@@ -85,7 +85,7 @@ router.get("/view/:id", async (req, res) => {
             return res.status(404).send("Nota fiscal não encontrada.");
         }
 
-        res.render("invoices/view", { invoice });
+        res.render("invoices/view", { invoice, currentPage: 'invoices'  });
     } catch (error) {
         console.error("❌ Erro ao visualizar nota fiscal:", error);
         res.status(500).send("Erro ao visualizar nota fiscal.");

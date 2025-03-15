@@ -1,61 +1,184 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <title>Detalhes da Venda</title>
-</head>
-<body>
-    <h2>Detalhes da Venda - ID <%= sale.id %></h2>
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="flex justify-between items-center mb-6 no-print">
+        <h2 class="text-2xl font-bold text-gray-800">
+            Venda #<%= sale.id %>
+            <span class="ml-2 text-sm text-gray-500">
+                <%= new Date(sale.createdAt).toLocaleDateString('pt-BR', { 
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) %>
+            </span>
+        </h2>
+        <div class="flex space-x-4">
+            <button class="text-blue-600 hover:text-blue-800 transition-colors">
+                <i class="fas fa-print mr-2"></i>Imprimir
+            </button>
+            <a href="/sales" class="text-gray-600 hover:text-gray-800 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Voltar
+            </a>
+        </div>
+    </div>
 
-    <h3>Informações Gerais</h3>
-    <p><strong>Vendedor:</strong> <%= sale.seller ? sale.seller.name : "N/A" %></p>
-    <p><strong>Cliente:</strong> <%= sale.customer ? sale.customer.name : "N/A" %></p>
-    <p><strong>Data da Venda:</strong> <%= sale.createdAt.toLocaleDateString("pt-BR") %></p>
+    <!-- Print Header -->
+    <div class="hidden print:block mb-8">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold mb-2"><%= company.name %></h1>
+            <p class="text-sm text-gray-600">
+                <%= company.address.street %>, <%= company.address.number %><br>
+                <%= company.address.neighborhood %> - <%= company.address.city %>/<%= company.address.state %><br>
+                <%= company.email %>
+            </p>
+            <h2 class="text-xl font-semibold mt-4">Comprovante de Venda #<%= sale.id %></h2>
+            <p class="text-sm text-gray-600">
+                <%= new Date(sale.createdAt).toLocaleDateString('pt-BR', { 
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) %>
+            </p>
+        </div>
+    </div>
 
-    <h3>Nota Fiscal</h3>
-    <% if (sale.invoice) { %>
-        <p><strong>Desconto:</strong> R$ <%= sale.invoice.discount.toFixed(2) %></p>
-        <p><strong>Pagamento PIX:</strong> R$ <%= sale.invoice.pix_value.toFixed(2) %></p>
-        <p><strong>Cartão de Crédito:</strong> R$ <%= sale.invoice.credit_value.toFixed(2) %></p>
-        <p><strong>Cartão de Débito:</strong> R$ <%= sale.invoice.debit_value.toFixed(2) %></p>
-        <p><strong>Dinheiro:</strong> R$ <%= sale.invoice.money_value.toFixed(2) %></p>
-        <p><strong>Outros:</strong> R$ <%= sale.invoice.other_value.toFixed(2) %></p>
-        <% if (sale.invoice.other_desc) { %>
-            <p><strong>Descrição do Pagamento:</strong> <%= sale.invoice.other_desc %></p>
-        <% } %>
-    <% } else { %>
-        <p><em>Nota fiscal não encontrada.</em></p>
-    <% } %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Informações da Venda -->
+        <div class="bg-gray-50 print:bg-white p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações da Venda</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Vendedor</label>
+                    <p class="text-gray-900"><%= sale.seller ? sale.seller.name : "Não informado" %></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Cliente</label>
+                    <p class="text-gray-900"><%= sale.customer ? sale.customer.name : "Não informado" %></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Data da Venda</label>
+                    <p class="text-gray-900">
+                        <%= new Date(sale.createdAt).toLocaleDateString('pt-BR', { 
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) %>
+                    </p>
+                </div>
+            </div>
+        </div>
 
-    <h3>Produtos da Venda</h3>
-    <% if (sale.invoice && sale.invoice.invoiceProducts.length > 0) { %>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Quantidade</th>
-                    <th>Valor Unitário</th>
-                    <th>Valor Total</th>
-                    <th>Custo Unitário</th>
-                    <th>Lucro</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% sale.invoice.invoiceProducts.forEach(item => { %>
+        <!-- Informações de Pagamento -->
+        <div class="bg-gray-50 print:bg-white p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações de Pagamento</h3>
+            <div class="space-y-3">
+                <% if (sale.invoice) { %>
+                    <% if (sale.invoice.pix_value > 0) { %>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">PIX:</span>
+                            <span class="font-medium">R$ <%= sale.invoice.pix_value.toFixed(2) %></span>
+                        </div>
+                    <% } %>
+                    <% if (sale.invoice.credit_value > 0) { %>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Cartão de Crédito:</span>
+                            <span class="font-medium">R$ <%= sale.invoice.credit_value.toFixed(2) %></span>
+                        </div>
+                    <% } %>
+                    <% if (sale.invoice.debit_value > 0) { %>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Cartão de Débito:</span>
+                            <span class="font-medium">R$ <%= sale.invoice.debit_value.toFixed(2) %></span>
+                        </div>
+                    <% } %>
+                    <% if (sale.invoice.money_value > 0) { %>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Dinheiro:</span>
+                            <span class="font-medium">R$ <%= sale.invoice.money_value.toFixed(2) %></span>
+                        </div>
+                    <% } %>
+                    <% if (sale.invoice.other_value > 0) { %>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Outros:</span>
+                            <span class="font-medium">R$ <%= sale.invoice.other_value.toFixed(2) %></span>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            <%= sale.invoice.other_desc %>
+                        </div>
+                    <% } %>
+                    <% if (sale.invoice.discount > 0) { %>
+                        <div class="flex justify-between text-red-600 border-t pt-2">
+                            <span>Desconto:</span>
+                            <span class="font-medium">R$ <%= sale.invoice.discount.toFixed(2) %></span>
+                        </div>
+                    <% } %>
+                    <div class="flex justify-between font-bold text-lg border-t border-gray-200 pt-3 mt-3">
+                        <span>Total:</span>
+                        <span class="text-green-600">R$ <%= (
+                            (sale.invoice.money_value || 0) + 
+                            (sale.invoice.pix_value || 0) + 
+                            (sale.invoice.credit_value || 0) + 
+                            (sale.invoice.debit_value || 0) + 
+                            (sale.invoice.other_value || 0)
+                        ).toFixed(2) %></span>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Produtos -->
+    <div class="bg-gray-50 print:bg-white p-6 rounded-lg mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Produtos</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100 print:bg-white">
                     <tr>
-                        <td><%= item.product ? item.product.name : "Produto não encontrado" %></td>
-                        <td><%= item.quantity %></td>
-                        <td>R$ <%= item.product ? item.product.sale_value.toFixed(2) : "N/A" %></td>
-                        <td>R$ <%= item.product ? (item.product.sale_value * item.quantity).toFixed(2) : "N/A" %></td>
-                        <td>R$ <%= item.product ? item.product.cost_value.toFixed(2) : "N/A" %></td>
-                        <td>R$ <%= item.product ? ((item.product.sale_value - item.product.cost_value) * item.quantity).toFixed(2) : "N/A" %></td>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Unit.</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider no-print">Custo Unit.</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider no-print">Lucro</th>
                     </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    <% } else { %>
-        <p><em>Não há produtos registrados nesta venda.</em></p>
-    <% } %>
-
-    <a href="/sales">Voltar</a>
-</body>
-</html>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <% if (sale.invoice && sale.invoice.invoiceProducts.length > 0) { %>
+                        <% sale.invoice.invoiceProducts.forEach(item => { %>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <%= item.product ? item.product.name : "Produto não encontrado" %>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <%= item.quantity %>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    R$ <%= item.product ? item.product.sale_value.toFixed(2) : "N/A" %>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    R$ <%= item.product ? (item.product.sale_value * item.quantity).toFixed(2) : "N/A" %>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 no-print">
+                                    R$ <%= item.product ? item.product.cost_value.toFixed(2) : "N/A" %>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600 no-print">
+                                    R$ <%= item.product ? ((item.product.sale_value - item.product.cost_value) * item.quantity).toFixed(2) : "N/A" %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                Não há produtos registrados nesta venda.
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

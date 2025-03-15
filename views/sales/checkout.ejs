@@ -1,68 +1,343 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <title>Checkout</title>
-</head>
-<body>
-    <h2>Checkout</h2>
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Checkout</h2>
+        <div class="text-sm text-gray-600">
+            <span id="date-time"></span>
+        </div>
+    </div>
 
-    <label for="customer">Cliente:</label>
-    <select id="customer" name="customer_id">
-        <option value="">Selecionar...</option>
-        <% customers.forEach(customer => { %>
-            <option value="<%= customer.id %>"><%= customer.name %></option>
-        <% }) %>
-    </select>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="form-group">
+            <label for="customer" class="block text-sm font-medium text-gray-700 mb-2">Cliente:</label>
+            <select id="customer" name="customer_id" class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Selecionar cliente...</option>
+                <% customers.forEach(customer => { %>
+                    <option value="<%= customer.id %>"><%= customer.name %></option>
+                <% }) %>
+            </select>
+        </div>
 
-    <label for="seller">Vendedor:</label>
-    <select id="seller" name="seller_id">
-        <option value="">Selecionar...</option>
-        <% sellers.forEach(seller => { %>
-            <option value="<%= seller.id %>"><%= seller.name %></option>
-        <% }) %>
-    </select>
+        <div class="form-group">
+            <label for="seller" class="block text-sm font-medium text-gray-700 mb-2">Vendedor:</label>
+            <select id="seller" name="seller_id" class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Selecionar vendedor...</option>
+                <% sellers.forEach(seller => { %>
+                    <option value="<%= seller.id %>"><%= seller.name %></option>
+                <% }) %>
+            </select>
+        </div>
+    </div>
 
-    <h3>Produtos</h3>
-    <table>
-        <tr>
-            <th>Nome</th>
-            <th>Estoque</th>
-            <th>Preço</th>
-            <th>Ação</th>
-        </tr>
-        <% products.forEach(product => { %>
-            <tr>
-                <td><%= product.name %></td>
-                <td><%= product.inventory ? product.inventory.quantity : 0 %></td>
-                <td>R$ <%= product.sale_value.toFixed(2) %></td>
-                <td>
-                    <button onclick="addProduct(<%= product.id %>, '<%= product.name %>', <%= product.sale_value %>, <%= product.inventory ? product.inventory.quantity : 0 %>)">
-                        Adicionar
-                    </button>
-                </td>
-            </tr>
-        <% }) %>
-    </table>
+    <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Adicionar Produto</h3>
+        <select id="product-select" class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Buscar produto...</option>
+            <% products.forEach(product => { %>
+                <option value="<%= product.id %>" 
+                        data-name="<%= product.name %>" 
+                        data-price="<%= product.sale_value %>" 
+                        data-stock="<%= product.inventory ? product.inventory.quantity : 0 %>">
+                    <%= product.name %> - R$ <%= product.sale_value.toFixed(2) %> (Estoque: <%= product.inventory ? product.inventory.quantity : 0 %>)
+                </option>
+            <% }) %>
+        </select>
+    </div>
 
-    <h3>Itens no Checkout</h3>
-    <table id="checkout-items"></table>
+    <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Itens no Carrinho</h3>
+        <div class="overflow-x-auto">
+            <table id="checkout-items" class="min-w-full divide-y divide-gray-200"></table>
+        </div>
+    </div>
 
-    <h3 id="checkout-total">Total: R$ 0,00</h3>
-    <h3 id="remaining-amount">Faltante: R$ 0,00</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Pagamentos</h3>
+            <button onclick="addPayment()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors mb-3">
+                <i class="fas fa-plus mr-2"></i>Adicionar Pagamento
+            </button>
+            <div id="payments-list" class="space-y-3"></div>
+            <div id="other-desc-container" class="mt-3" style="display: none;"></div>
+        </div>
 
-    <h3>Pagamentos</h3>
-    <button onclick="addPayment()">Adicionar Pagamento</button>
-    <div id="payments-list"></div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Resumo</h3>
+            <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Subtotal:</span>
+                    <span id="checkout-total" class="font-semibold">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Desconto:</span>
+                    <div class="flex items-center">
+                        <span>R$</span>
+                        <input type="number" id="discount" step="0.01" onchange="updateCheckout()"
+                            class="w-24 ml-2 p-1 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t">
+                    <span class="text-gray-600">Total de Pagamentos:</span>
+                    <span id="total-payments" class="font-semibold">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t">
+                    <span class="text-gray-600">Faltante:</span>
+                    <span id="remaining-amount" class="font-semibold text-red-500">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- 🔹 Descrição para o pagamento "Outros", inicialmente oculta -->
-    <div id="other-desc-container" style="display: none;"></div>
+    <div class="text-right">
+        <button id="finalize-sale" disabled onclick="finalizeSale()"
+            class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:!opacity-50">
+            <i class="fas fa-check mr-2"></i>Finalizar Compra
+        </button>
+    </div>
+</div>
 
-    <h3>Desconto</h3>
-    <input type="number" id="discount" step="0.01" onchange="updateCheckout()">
+<script>
+    // Initialize Select2
+    $(document).ready(function() {
+        $('#product-select, #customer, #seller').select2({
+            width: '100%'
+        });
 
-    <button id="finalize-sale" disabled onclick="finalizeSale()">Finalizar Compra</button>
+        $('#product-select').select2({
+            placeholder: 'Buscar produto...'
+        });
 
-    <!-- 🔹 ✅ Importando o JavaScript do Checkout -->
-    <script src="/js/checkout.js"></script>
-</body>
-</html>
+        $('#customer').select2({
+            placeholder: 'Selecionar cliente...'
+        });
+
+        $('#seller').select2({
+            placeholder: 'Selecionar vendedor...'
+        });
+
+        // Handle product selection
+        $('#product-select').on('select2:select', function(e) {
+            const option = e.params.data.element;
+            const productId = parseInt(option.value);
+            const name = option.dataset.name;
+            const price = parseFloat(option.dataset.price);
+            const stock = parseInt(option.dataset.stock);
+            
+            addProduct(productId, name, price, stock);
+            $(this).val('').trigger('change');
+        });
+    });
+
+    // Update date and time
+    function updateDateTime() {
+        const now = new Date();
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        document.getElementById('date-time').textContent = now.toLocaleDateString('pt-BR', options);
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+
+    let checkoutItems = [];
+    let payments = [];
+    let otherDescription = "";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("discount").value = "0";
+        updateCheckout();
+    });
+
+    function addProduct(productId, name, price, stock) {
+        let item = checkoutItems.find((p) => p.id === productId);
+        if (item) {
+            if (item.quantity < stock) item.quantity++;
+        } else {
+            checkoutItems.push({ id: productId, name, price, quantity: 1, stock });
+        }
+        updateCheckout();
+    }
+
+    function changeQuantity(productId, delta) {
+        let item = checkoutItems.find((p) => p.id === productId);
+        if (item && item.quantity + delta > 0 && item.quantity + delta <= item.stock) {
+            item.quantity += delta;
+        }
+        updateCheckout();
+    }
+
+    function addPayment() {
+        payments.push({ type: "money", value: 0 });
+        renderPayments();
+    }
+
+    function updatePaymentType(index, value) {
+        payments[index].type = value;
+        renderPayments();
+    }
+
+    function updatePaymentValue(index, value) {
+        payments[index].value = parseFloat(value) || 0;
+        updateCheckout();
+    }
+
+    function updateOtherDesc(value) {
+        otherDescription = value;
+    }
+
+    function updateCheckout() {
+        let checkoutTable = document.getElementById("checkout-items");
+        checkoutTable.innerHTML = `
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preço Unit.</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                ${checkoutItems.map((item) => `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">${item.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-2">
+                                <button onclick="changeQuantity(${item.id}, -1)"
+                                    class="bg-gray-200 hover:bg-gray-300 rounded-full w-6 h-6 flex items-center justify-center">
+                                    <i class="fas fa-minus text-xs"></i>
+                                </button>
+                                <span>${item.quantity}</span>
+                                <button onclick="changeQuantity(${item.id}, 1)"
+                                    class="bg-gray-200 hover:bg-gray-300 rounded-full w-6 h-6 flex items-center justify-center">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">R$ ${item.price.toFixed(2)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">R$ ${(item.price * item.quantity).toFixed(2)}</td>
+                    </tr>
+                `).join("")}
+            </tbody>
+        `;
+
+        let total = checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        let discount = parseFloat(document.getElementById("discount").value) || 0;
+
+        if (discount > total) {
+            discount = total;
+            document.getElementById("discount").value = discount.toFixed(2);
+        }
+
+        let paymentTotal = payments.reduce((sum, p) => sum + parseFloat(p.value || 0), 0);
+        let remainingAmount = total - paymentTotal - discount;
+
+        document.getElementById("checkout-total").innerText = `R$ ${total.toFixed(2)}`;
+        document.getElementById("total-payments").innerText = `R$ ${paymentTotal.toFixed(2)}`;
+        document.getElementById("remaining-amount").innerText = `R$ ${remainingAmount.toFixed(2)}`;
+
+        let finalizeButton = document.getElementById("finalize-sale");
+        finalizeButton.disabled = remainingAmount !== 0 || total <= 0;
+        
+    }
+
+    function renderPayments() {
+        let paymentsList = document.getElementById("payments-list");
+        paymentsList.innerHTML = payments.map((p, index) => `
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="grid grid-cols-2 gap-3">
+                    <select onchange="updatePaymentType(${index}, this.value)"
+                        class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="pix" ${p.type === "pix" ? "selected" : ""}>PIX</option>
+                        <option value="credit" ${p.type === "credit" ? "selected" : ""}>Cartão de Crédito</option>
+                        <option value="debit" ${p.type === "debit" ? "selected" : ""}>Cartão de Débito</option>
+                        <option value="money" ${p.type === "money" ? "selected" : ""}>Dinheiro</option>
+                        <option value="other" ${p.type === "other" ? "selected" : ""}>Outros</option>
+                    </select>
+                    <div class="flex items-center">
+                        <span class="mr-2">R$</span>
+                        <input type="number" step="0.01" placeholder="Valor" value="${p.value}"
+                            oninput="updatePaymentValue(${index}, this.value)"
+                            class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+        `).join("");
+
+        let hasOther = payments.some((p) => p.type === "other");
+        let otherDescContainer = document.getElementById("other-desc-container");
+        
+        if (hasOther) {
+            otherDescContainer.style.display = "block";
+            otherDescContainer.innerHTML = `
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <label for="other-desc" class="block text-sm font-medium text-gray-700 mb-2">
+                        Descrição (para "Outros"):
+                    </label>
+                    <input type="text" id="other-desc" placeholder="Descrição do pagamento"
+                        value="${otherDescription}" oninput="updateOtherDesc(this.value)"
+                        class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            `;
+        } else {
+            otherDescContainer.style.display = "none";
+            otherDescContainer.innerHTML = "";
+        }
+        
+        updateCheckout();
+    }
+
+    async function finalizeSale() {
+        let customerId = document.getElementById("customer").value || null;
+        let sellerId = document.getElementById("seller").value || null;
+
+        let saleData = {
+            customer_id: customerId,
+            seller_id: sellerId,
+            products: checkoutItems,
+            payments: payments,
+            discount: parseFloat(document.getElementById("discount").value) || 0,
+            other_desc: otherDescription,
+        };
+
+        try {
+            let response = await fetch("/sales/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(saleData),
+            });
+
+            let result = await response.json();
+            
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso!',
+                    text: result.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: result.message || 'Erro ao processar a venda!'
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao finalizar a venda:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro!',
+                text: 'Erro ao processar a venda!'
+            });
+        }
+    }
+</script>
+
+<!-- SweetAlert2 for better alerts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

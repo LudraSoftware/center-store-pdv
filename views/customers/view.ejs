@@ -1,30 +1,75 @@
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Detalhes do Cliente</h2>
+        <div class="flex space-x-4">
+            <a href="/customers/edit/<%= customer.id %>" class="text-yellow-600 hover:text-yellow-700 transition-colors">
+                <i class="fas fa-edit mr-2"></i>Editar
+            </a>
+            <a href="/customers" class="text-gray-600 hover:text-gray-800 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Voltar
+            </a>
+        </div>
+    </div>
 
-<!-- 📌 customers/view.ejs -->
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <title>Detalhes do Cliente</title>
-</head>
-<body>
-    <h2>Cliente: <%= customer.name %></h2>
-    <% if (customer.customerInfo) { %>
-        <p>Documento: <%= customer.customerInfo.document %></p>
-        <p>Email: <%= customer.customerInfo.email %></p>
-        <p>Telefone: <%= customer.customerInfo.phone_number %></p>
-        <p>Telefone Alternativo: <%= customer.customerInfo.alt_phone_number %></p>
-    <% } else { %>
-        <p><em>Sem informações adicionais</em></p>
-    <% } %>
-    
-    <% if (customer.customerAddress) { %>
-        <h3>Endereço</h3>
-        <p>CEP: <%= customer.customerAddress.postal_code %></p>
-        <p>Rua: <%= customer.customerAddress.street %>, <%= customer.customerAddress.number %></p>
-        <p>Bairro: <%= customer.customerAddress.neighborhood %></p>
-        <p>Estado: <%= customer.customerAddress.state %></p>
-    <% } else { %>
-        <p><em>Sem endereço cadastrado</em></p>
-    <% } %>
-    <a href="/customers">Voltar</a>
-</body>
-</html>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Informações Básicas -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações Pessoais</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Nome</label>
+                    <p class="mt-1 text-lg text-gray-900"><%= customer.name %></p>
+                </div>
+                <% if (customer.customerInfo) { %>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">CPF</label>
+                        <p class="mt-1 text-lg text-gray-900"><%= customer.customerInfo.document %></p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Email</label>
+                        <p class="mt-1 text-lg text-gray-900"><%= customer.customerInfo.email %></p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Telefone Principal</label>
+                        <p class="mt-1 text-lg text-gray-900"><%= customer.customerInfo.phone_number %></p>
+                    </div>
+                    <% if (customer.customerInfo.alt_phone_number) { %>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500">Telefone Alternativo</label>
+                            <p class="mt-1 text-lg text-gray-900"><%= customer.customerInfo.alt_phone_number %></p>
+                        </div>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Endereço -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Endereço</h3>
+            <% if (customer.customerAddress) { %>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">CEP</label>
+                        <p class="mt-1 text-lg text-gray-900"><%= customer.customerAddress.postal_code %></p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Logradouro</label>
+                        <p class="mt-1 text-lg text-gray-900">
+                            <%= customer.customerAddress.street %>, <%= customer.customerAddress.number %>
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Bairro</label>
+                        <p class="mt-1 text-lg text-gray-900"><%= customer.customerAddress.neighborhood %></p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Estado</label>
+                        <p class="mt-1 text-lg text-gray-900"><%= customer.customerAddress.state %></p>
+                    </div>
+                </div>
+            <% } else { %>
+                <p class="text-gray-500 italic">Nenhum endereço cadastrado</p>
+            <% } %>
+        </div>
+    </div>
+</div>

@@ -1,36 +1,181 @@
-<!-- 📌 customers/list.ejs -->
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <title>Lista de Clientes</title>
-</head>
-<body>
-    <h2>Clientes</h2>
-    <% if (messageError) { %>
-        <p style="color: red;"><%= messageError %></p>
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Lista de Clientes</h2>
+        <a href="/customers/create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+            <i class="fas fa-plus mr-2"></i>Novo Cliente
+        </a>
+    </div>
+
+    <% if (messageError && messageError != "") { %>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline"><%= messageError %></span>
+        </div>
     <% } %>
-    <% if (messageSuccess) { %>
-        <p style="color: green;"><%= messageSuccess %></p>
+
+    <% if (messageSuccess && messageSuccess != "") { %>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline"><%= messageSuccess %></span>
+        </div>
     <% } %>
-    <ul>
-        <% customers.forEach(customer => { %>
-            <li>
-                <%= customer.name %> - 
-                <% if (customer.customerInfo) { %>
-                    <%= customer.customerInfo.document %> - <%= customer.customerInfo.email %>
-                <% } else { %>
-                    <em>Sem informações cadastradas</em>
-                <% } %>
-                <a href="/customers/view/<%= customer.id %>">Visualizar</a>
-                <a href="/customers/edit/<%= customer.id %>">Editar</a>
-                <form action="/customers/delete/<%= customer.id %>" method="POST" style="display:inline;">
-                    <button type="submit">Deletar</button>
-                </form>
-            </li>
-        <% }) %>
-        
-    </ul>
-    <a href="/customers/create">Adicionar Cliente</a>
-    <a href="/dashboard">Voltar</a>
-</body>
-</html>
+
+    <div class="mb-6">
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-search text-gray-400"></i>
+            </div>
+            <input type="text" id="customer-filter" 
+                class="pl-10 p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 w-full"
+                placeholder="Buscar por nome, CPF ou email...">
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contato</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Endereço</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <% customers.forEach(customer => { %>
+                    <tr class="customer-row hover:bg-gray-50" 
+                        data-customer-name="<%= customer.name.toLowerCase() %>"
+                        data-customer-document="<%= customer.customerInfo ? customer.customerInfo.document : '' %>"
+                        data-customer-email="<%= customer.customerInfo ? customer.customerInfo.email : '' %>">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900"><%= customer.name %></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">
+                                <%= customer.customerInfo ? customer.customerInfo.document : "Não informado" %>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">
+                                <%= customer.customerInfo ? customer.customerInfo.phone_number : "Não informado" %>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                <%= customer.customerInfo ? customer.customerInfo.email : "Não informado" %>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <% if (customer.customerAddress) { %>
+                                <div class="text-sm text-gray-900">
+                                    <%= customer.customerAddress.street %>, <%= customer.customerAddress.number %>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    <%= customer.customerAddress.neighborhood %> - <%= customer.customerAddress.state %>
+                                </div>
+                            <% } else { %>
+                                <div class="text-sm text-gray-500">Não informado</div>
+                            <% } %>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <a href="/customers/view/<%= customer.id %>" class="text-blue-600 hover:text-blue-900">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="/customers/edit/<%= customer.id %>" class="text-yellow-600 hover:text-yellow-900">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <!-- <button onclick="deleteCustomer(<%= customer.id %>)" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </button> -->
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        const $rows = $('.customer-row');
+        const $noResults = $('<tr class="no-results hidden"><td colspan="5" class="px-6 py-4 text-center text-gray-500">Nenhum cliente encontrado</td></tr>');
+        $rows.first().parent().append($noResults);
+
+        $('#customer-filter').on('input', function() {
+            const searchText = $(this).val().toLowerCase();
+            let hasVisibleRows = false;
+
+            $rows.each(function() {
+                const $row = $(this);
+                const customerName = String($row.data('customer-name') || '');
+                const customerDocument = String($row.data('customer-document') || '');
+                const customerEmail = String($row.data('customer-email') || '');
+
+                const matchesSearch = 
+                    customerName.includes(searchText) ||
+                    customerDocument.includes(searchText) ||
+                    customerEmail.includes(searchText);
+
+                if (matchesSearch) {
+                    $row.show();
+                    hasVisibleRows = true;
+                } else {
+                    $row.hide();
+                }
+            });
+
+            if (hasVisibleRows) {
+                $noResults.addClass('hidden');
+            } else {
+                $noResults.removeClass('hidden');
+            }
+        });
+
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape') {
+                $('#customer-filter').val('').trigger('input');
+            }
+        });
+    });
+
+    function deleteCustomer(id) {
+        Swal.fire({
+            title: 'Confirmar exclusão',
+            text: "Esta ação não poderá ser revertida!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/customers/delete/${id}`, {
+                    method: 'POST'
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'Excluído!',
+                            'O cliente foi excluído com sucesso.',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Erro!',
+                            'Não foi possível excluir o cliente.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'Erro!',
+                        'Ocorreu um erro ao excluir o cliente.',
+                        'error'
+                    );
+                });
+            }
+        });
+    }
+</script>

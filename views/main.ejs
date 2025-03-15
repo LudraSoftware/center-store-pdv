@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= company.name %> - PDV</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .sidebar-link.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        .sidebar-link.active i {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <!-- Logo -->
+            <div class="p-4 border-b">
+                <div class="flex items-center justify-center">
+                    <% if (company.logoHorizontal) { %>
+                        <img src="<%= company.logoHorizontal %>" alt="<%= company.name %>" class="h-8">
+                    <% } else { %>
+                        <i class="fas fa-cash-register text-2xl text-blue-600 mr-2"></i>
+                        <span class="text-xl font-semibold text-gray-800"><%= company.name %></span>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="mt-4">
+                <a href="/dashboard" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'dashboard' ? 'active' : '' %>">
+                    <i class="fas fa-chart-line w-5 mr-3"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/sales/checkout" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'checkout' ? 'active' : '' %>">
+                    <i class="fas fa-cash-register w-5 mr-3"></i>
+                    <span>PDV</span>
+                </a>
+                <a href="/products" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'products' ? 'active' : '' %>">
+                    <i class="fas fa-box w-5 mr-3"></i>
+                    <span>Produtos</span>
+                </a>
+                <a href="/customers" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'customer' ? 'active' : '' %>">
+                    <i class="fas fa-users w-5 mr-3"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="/suppliers" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'supplier' ? 'active' : '' %>">
+                    <i class="fas fa-truck w-5 mr-3"></i>
+                    <span>Fornecedores</span>
+                </a>
+                <a href="/sales" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'sales' ? 'active' : '' %>">
+                    <i class="fas fa-file-invoice w-5 mr-3"></i>
+                    <span>Vendas</span>
+                </a>
+                <a href="/invoices" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'invoices' ? 'active' : '' %>">
+                    <i class="fas fa-file-invoice w-5 mr-3"></i>
+                    <span>Notas</span>
+                </a>
+            </nav>
+
+            <!-- User Info -->
+            <div class="absolute bottom-0 w-64 border-t">
+                <div class="p-4">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-700">Admin</p>
+                            <p class="text-xs text-gray-500">Administrador</p>
+                        </div>
+                    </div>
+                    <a href="/logout" class="mt-3 flex items-center text-sm text-red-600 hover:text-red-800">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        <span>Sair</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm">
+                <div class="px-6 py-4">
+                    <h1 class="text-2xl font-semibold text-gray-800">
+                        <% if (currentPage === 'dashboard') { %>
+                            Dashboard
+                        <% } else if (currentPage === 'checkout') { %>
+                            PDV
+                        <% } else if (currentPage === 'products') { %>
+                            Produtos
+                        <% } else if (currentPage === 'customers') { %>
+                            Clientes
+                        <% } else if (currentPage === 'suppliers') { %>
+                            Fornecedores
+                        <% } else if (currentPage === 'invoices') { %>
+                            Notas
+                        <% } %>
+                    </h1>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+                <%- body %>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

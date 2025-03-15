@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
             order: [["createdAt", "DESC"]],
         });
 
-        res.render("sales/list", { sales });
+        res.render("sales/list", { sales, currentPage: 'sales' });
     } catch (error) {
         console.error("❌ Erro ao listar vendas:", error);
         res.status(500).send("Erro ao carregar vendas.");
@@ -57,7 +57,7 @@ router.get("/view/:id", async (req, res) => {
             return res.status(404).send("Venda não encontrada.");
         }
 
-        res.render("sales/view", { sale });
+        res.render("sales/view", { sale, currentPage: 'sales' });
     } catch (error) {
         console.error("❌ Erro ao visualizar venda:", error);
         res.status(500).send("Erro ao carregar detalhes da venda.");
@@ -81,7 +81,8 @@ router.get('/checkout', async (req, res) => {
             checkoutItems: [],
             total: 0,
             payments: [],
-            discount: 0
+            discount: 0,
+            currentPage: 'checkout'
         });
     } catch (err) {
         console.error('❌ Erro ao carregar checkout:', err);
@@ -210,9 +211,5 @@ router.post('/checkout', async (req, res) => {
         res.status(500).json({ message: "Erro ao processar a venda!" });
     }
 });
-
-module.exports = router;
-
-
 
 module.exports = router;

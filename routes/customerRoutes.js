@@ -5,7 +5,7 @@ const { Customer, CustomerInfo, CustomerAddress } = require('../models');
 const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
 
 // 📌 Listar clientes
-router.get('/', ensureAuthenticated, ensureAdmin, async (req, res) => {
+router.get('/',  async (req, res) => {
     try {
         const customers = await Customer.findAll({
             attributes: ['id', 'name', 'createdAt', 'updatedAt'], // 🔹 Incluindo timestamps
@@ -15,7 +15,7 @@ router.get('/', ensureAuthenticated, ensureAdmin, async (req, res) => {
             ]
         });
 
-        res.render('customers/list', { customers, messageError: req.flash('error'), messageSuccess: req.flash('success') });
+        res.render('customers/list', { customers, messageError: req.flash('error'), messageSuccess: req.flash('success'),   currentPage: 'customer' });
     } catch (err) {
         console.error('❌ Erro ao listar clientes:', err);
         req.flash('error', 'Erro ao listar clientes.');
@@ -24,12 +24,12 @@ router.get('/', ensureAuthenticated, ensureAdmin, async (req, res) => {
 });
 
 // 📌 Página de criação de cliente
-router.get('/create', ensureAuthenticated, ensureAdmin, (req, res) => {
-    res.render('customers/create', { messageError: req.flash('error'), messageSuccess: req.flash('success') });
+router.get('/create',  (req, res) => {
+    res.render('customers/create', { messageError: req.flash('error'), messageSuccess: req.flash('success'), currentPage: 'customer' });
 });
 
 // 📌 Criar um cliente
-router.post('/create', ensureAuthenticated, ensureAdmin, async (req, res) => {
+router.post('/create',  async (req, res) => {
     try {
         const { name, document, email, phone_number, alt_phone_number, postal_code, street, number, neighborhood, state } = req.body;
         
@@ -47,7 +47,7 @@ router.post('/create', ensureAuthenticated, ensureAdmin, async (req, res) => {
 });
 
 // 📌 Página de edição de cliente
-router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
+router.get('/edit/:id',  async (req, res) => {
     try {
         const customer = await Customer.findByPk(req.params.id, {
             include: [
@@ -61,7 +61,7 @@ router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
             return res.redirect('/customers');
         }
 
-        res.render('customers/edit', { customer, messageError: req.flash('error'), messageSuccess: req.flash('success') });
+        res.render('customers/edit', { customer, messageError: req.flash('error'), messageSuccess: req.flash('success'),currentPage: 'customer' });
     } catch (err) {
         console.error('❌ Erro ao buscar cliente:', err);
         req.flash('error', 'Erro ao buscar cliente.');
@@ -70,7 +70,7 @@ router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
 });
 
 // 📌 Atualizar cliente
-router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
+router.post('/edit/:id',  async (req, res) => {
     const { name, document, email, phone_number, alt_phone_number, postal_code, street, number, neighborhood, state } = req.body;
 
     try {
@@ -105,21 +105,8 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
     }
 });
 
-// 📌 Deletar cliente
-router.post('/delete/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
-    try {
-        await Customer.destroy({ where: { id: req.params.id } });
-        req.flash('success', 'Cliente deletado com sucesso!');
-        res.redirect('/customers');
-    } catch (err) {
-        console.error('❌ Erro ao deletar cliente:', err);
-        req.flash('error', 'Erro ao deletar cliente.');
-        res.redirect('/customers');
-    }
-});
-
 // 📌 Visualizar cliente e detalhes
-router.get('/view/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
+router.get('/view/:id',  async (req, res) => {
     try {
         const customer = await Customer.findByPk(req.params.id, {
             include: [
@@ -133,7 +120,7 @@ router.get('/view/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
             return res.redirect('/customers');
         }
 
-        res.render('customers/view', { customer, messageError: req.flash('error'), messageSuccess: req.flash('success') });
+        res.render('customers/view', { customer, messageError: req.flash('error'), messageSuccess: req.flash('success'),currentPage: 'customer' });
     } catch (err) {
         console.error('❌ Erro ao visualizar cliente:', err);
         req.flash('error', 'Erro ao visualizar cliente.');
