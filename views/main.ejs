@@ -20,105 +20,237 @@
             color: #3b82f6;
         }
 
-        /* Dark mode styles */
+        /* Dark mode (Blue-gray) styles */
         .dark {
             color-scheme: dark;
         }
         
         .dark body {
-            background-color: #1a1a1a;
-            color: #e5e5e5;
+            background-color: #111827;
+            color: #f3f4f6;
         }
 
         .dark .bg-white {
-            background-color: #2d2d2d;
+            background-color: #1f2937;
         }
 
         .dark .bg-gray-50,
         .dark .bg-gray-100 {
-            background-color: #363636;
+            background-color: #374151;
         }
 
         .dark .text-gray-500 {
-            color: #a3a3a3;
+            color: #9ca3af;
         }
 
         .dark .text-gray-600 {
-            color: #999999;
+            color: #d1d5db;
         }
 
-        .dark .text-gray-700 {
-            color: #e5e5e5;
-        }
-
+        .dark .text-gray-700,
         .dark .text-gray-800,
         .dark .text-gray-900 {
-            color: #ffffff;
+            color: #f3f4f6;
         }
 
         .dark .border-gray-200,
         .dark .border-gray-300 {
-            border-color: #404040;
+            border-color: #374151;
         }
 
         .dark .shadow-lg,
         .dark .shadow-md,
         .dark .shadow-sm {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
         .dark input,
         .dark select,
         .dark textarea {
-            background-color: #363636;
-            border-color: #404040;
-            color: #e5e5e5;
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f3f4f6;
         }
 
         .dark input::placeholder {
-            color: #666666;
+            color: #9ca3af;
         }
 
         .dark .hover\:bg-gray-50:hover {
-            background-color: #404040;
+            background-color: #2d3748;
+        }
+
+        .dark .sidebar-link:hover {
+            background-color: #2d3748;
+            color: #f3f4f6;
         }
 
         .dark table tbody tr:hover {
-            background-color: #363636;
+            background-color: #374151;
         }
 
         .dark .select2-container--default .select2-selection--single {
-            background-color: #363636;
-            border-color: #404040;
+            background-color: #374151;
+            border-color: #4b5563;
         }
 
         .dark .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #e5e5e5;
+            color: #f3f4f6;
         }
 
         .dark .select2-dropdown {
-            background-color: #363636;
-            border-color: #404040;
+            background-color: #374151;
+            border-color: #4b5563;
         }
 
         .dark .select2-search__field {
-            background-color: #2d2d2d;
-            color: #e5e5e5;
+            background-color: #1f2937;
+            color: #f3f4f6;
         }
 
         .dark .select2-results__option {
-            color: #e5e5e5;
+            color: #f3f4f6;
         }
 
         .dark .select2-results__option--highlighted {
-            background-color: #404040;
+            background-color: #4b5563;
+        }
+
+        /* Black theme styles */
+        .black {
+            color-scheme: dark;
+        }
+        
+        .black body {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .black .bg-white {
+            background-color: #121212;
+        }
+
+        .black .bg-gray-50,
+        .black .bg-gray-100 {
+            background-color: #1a1a1a;
+        }
+
+        .black .text-gray-500 {
+            color: #a0a0a0;
+        }
+
+        .black .text-gray-600 {
+            color: #d4d4d4;
+        }
+
+        .black .text-gray-700,
+        .black .text-gray-800,
+        .black .text-gray-900 {
+            color: #ffffff;
+        }
+
+        .black .border-gray-200,
+        .black .border-gray-300 {
+            border-color: #2a2a2a;
+        }
+
+        .black .shadow-lg,
+        .black .shadow-md,
+        .black .shadow-sm {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        .black input,
+        .black select,
+        .black textarea {
+            background-color: #1a1a1a;
+            border-color: #2a2a2a;
+            color: #ffffff;
+        }
+
+        .black input::placeholder {
+            color: #666666;
+        }
+
+        .black .hover\:bg-gray-50:hover {
+            background-color: #1a1a1a;
+        }
+
+        .black .sidebar-link:hover {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .black table tbody tr:hover {
+            background-color: #1a1a1a;
+        }
+
+        .black .select2-container--default .select2-selection--single {
+            background-color: #1a1a1a;
+            border-color: #2a2a2a;
+        }
+
+        .black .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #ffffff;
+        }
+
+        .black .select2-dropdown {
+            background-color: #1a1a1a;
+            border-color: #2a2a2a;
+        }
+
+        .black .select2-search__field {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .black .select2-results__option {
+            color: #ffffff;
+        }
+
+        .black .select2-results__option--highlighted {
+            background-color: #2a2a2a;
+        }
+
+        /* Mobile menu button */
+        .mobile-menu-button {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 50;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 4rem;
+            }
         }
     </style>
 </head>
 <body class="bg-gray-100">
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-button p-2 rounded-lg bg-blue-600 text-white">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg">
+        <div class="sidebar fixed md:relative w-64 bg-white shadow-lg h-full z-40">
             <!-- Logo -->
             <div class="p-4 border-b border-gray-200">
                 <div class="flex items-center justify-center">
@@ -137,6 +269,10 @@
                     <i class="fas fa-chart-line w-5 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
+                <a href="/sales" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'sales' ? 'active' : '' %>">
+                    <i class="fas fa-shopping-cart w-5 mr-3"></i>
+                    <span>Vendas</span>
+                </a>
                 <a href="/sales/checkout" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'checkout' ? 'active' : '' %>">
                     <i class="fas fa-cash-register w-5 mr-3"></i>
                     <span>PDV</span>
@@ -152,10 +288,6 @@
                 <a href="/suppliers" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'suppliers' ? 'active' : '' %>">
                     <i class="fas fa-truck w-5 mr-3"></i>
                     <span>Fornecedores</span>
-                </a>
-                <a href="/sales" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'sales' ? 'active' : '' %>">
-                    <i class="fas fa-file-invoice w-5 mr-3"></i>
-                    <span>Vendas</span>
                 </a>
                 <a href="/invoices" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'invoices' ? 'active' : '' %>">
                     <i class="fas fa-file-invoice w-5 mr-3"></i>
@@ -177,8 +309,9 @@
                             </div>
                         </div>
                         <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                            <i class="fas fa-moon text-gray-600 dark:hidden"></i>
-                            <i class="fas fa-sun text-yellow-500 hidden dark:inline"></i>
+                            <i class="fas fa-sun text-yellow-500 dark:hidden black:hidden"></i>
+                            <i class="fas fa-moon text-blue-500 hidden dark:inline black:hidden"></i>
+                            <i class="fas fa-moon text-gray-200 hidden black:inline"></i>
                         </button>
                     </div>
                     <a href="/logout" class="flex items-center text-sm text-red-600 hover:text-red-800">
@@ -190,13 +323,15 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="main-content flex-1 flex flex-col overflow-hidden">
             <!-- Top Bar -->
             <header class="bg-white shadow-sm">
                 <div class="px-6 py-4">
                     <h1 class="text-2xl font-semibold text-gray-800">
                         <% if (currentPage === 'dashboard') { %>
                             Dashboard
+                        <% } else if (currentPage === 'sales') { %>
+                            Vendas
                         <% } else if (currentPage === 'checkout') { %>
                             PDV
                         <% } else if (currentPage === 'products') { %>
@@ -224,29 +359,44 @@
         const themeToggle = document.getElementById('theme-toggle');
         const html = document.documentElement;
         
-        // Check for saved theme preference or system preference
+        // Check for saved theme preference
         const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         
         // Set initial theme
-        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-            html.classList.add('dark');
+        if (savedTheme) {
+            html.classList.add(savedTheme);
         }
         
-        // Toggle theme
+        // Toggle between themes (light -> dark -> black -> light)
         themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('black');
+                localStorage.setItem('theme', 'black');
+            } else if (html.classList.contains('black')) {
+                html.classList.remove('black');
+                localStorage.setItem('theme', '');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
         });
-        
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-            if (!localStorage.getItem('theme')) {
-                if (e.matches) {
-                    html.classList.add('dark');
-                } else {
-                    html.classList.remove('dark');
-                }
+
+        // Mobile menu functionality
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const sidebar = document.querySelector('.sidebar');
+
+        mobileMenuButton.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !mobileMenuButton.contains(e.target) && 
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
             }
         });
     </script>

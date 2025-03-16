@@ -118,14 +118,33 @@
         customers: null
     };
 
-    // Chart colors for dark/light mode
+    // Chart colors for themes
     function getChartColors() {
         const isDark = document.documentElement.classList.contains('dark');
-        return {
-            text: isDark ? '#e5e5e5' : '#1a1a1a',
-            grid: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-            background: isDark ? '#2d2d2d' : '#ffffff'
-        };
+        const isBlack = document.documentElement.classList.contains('black');
+        
+        if (isBlack) {
+            return {
+                text: '#ffffff',
+                grid: 'rgba(255, 255, 255, 0.1)',
+                background: '#121212',
+                gridBorder: 'rgba(255, 255, 255, 0.2)'
+            };
+        } else if (isDark) {
+            return {
+                text: '#f3f4f6',
+                grid: 'rgba(243, 244, 246, 0.1)',
+                background: '#1f2937',
+                gridBorder: 'rgba(243, 244, 246, 0.2)'
+            };
+        } else {
+            return {
+                text: '#1a1a1a',
+                grid: 'rgba(0, 0, 0, 0.1)',
+                background: '#ffffff',
+                gridBorder: 'rgba(0, 0, 0, 0.1)'
+            };
+        }
     }
 
     // Base chart options
@@ -136,24 +155,38 @@
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    display: false
+                    display: false,
+                    labels: {
+                        color: colors.text,
+                        font: {
+                            size: 12
+                        }
+                    }
                 }
             },
             scales: {
                 x: {
                     grid: {
-                        color: colors.grid
+                        color: colors.grid,
+                        borderColor: colors.gridBorder
                     },
                     ticks: {
-                        color: colors.text
+                        color: colors.text,
+                        font: {
+                            size: 11
+                        }
                     }
                 },
                 y: {
                     grid: {
-                        color: colors.grid
+                        color: colors.grid,
+                        borderColor: colors.gridBorder
                     },
                     ticks: {
-                        color: colors.text
+                        color: colors.text,
+                        font: {
+                            size: 11
+                        }
                     }
                 }
             }
@@ -163,6 +196,7 @@
     // Create charts
     function createCharts() {
         const options = getBaseOptions();
+        const colors = getChartColors();
 
         // Destroy existing charts
         Object.values(charts).forEach(chart => {
@@ -192,7 +226,10 @@
                             display: true,
                             position: 'top',
                             labels: {
-                                color: getChartColors().text
+                                color: colors.text,
+                                font: {
+                                    size: 12
+                                }
                             }
                         }
                     }
@@ -214,7 +251,21 @@
                         borderRadius: 4
                     }]
                 },
-                options
+                options: {
+                    ...options,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: colors.text,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }
 
@@ -244,7 +295,11 @@
                             display: true,
                             position: 'right',
                             labels: {
-                                color: getChartColors().text
+                                color: colors.text,
+                                font: {
+                                    size: 11
+                                },
+                                padding: 20
                             }
                         }
                     }
@@ -270,21 +325,15 @@
                 options: {
                     ...options,
                     indexAxis: 'y',
-                    scales: {
-                        x: {
-                            grid: {
-                                color: getChartColors().grid
-                            },
-                            ticks: {
-                                color: getChartColors().text
-                            }
-                        },
-                        y: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: getChartColors().text
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: colors.text,
+                                font: {
+                                    size: 12
+                                }
                             }
                         }
                     }
@@ -295,13 +344,7 @@
 
     // Update chart themes
     function updateChartsTheme() {
-        const options = getBaseOptions();
-        Object.values(charts).forEach(chart => {
-            if (chart) {
-                chart.options = { ...chart.options, ...options };
-                chart.update('none');
-            }
-        });
+        createCharts(); // Recreate charts with new theme colors
     }
 
     // Initialize charts when DOM is ready
