@@ -5,7 +5,7 @@ const { Product, Supplier, Inventory } = require("../models");
 const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
 
 // 📌 Listar produtos
-router.get("/",  async (req, res) => {
+router.get("/", ensureAuthenticated, ensureAdmin,  async (req, res) => {
   try {
     const products = await Product.findAll({
       attributes: ["id", "name", "cost_value", "sale_value"],
@@ -29,7 +29,7 @@ router.get("/",  async (req, res) => {
 });
 
 // 📌 Página de criação de produto
-router.get("/create",  async (req, res) => {
+router.get("/create", ensureAuthenticated, ensureAdmin,  async (req, res) => {
   try {
     const suppliers = await Supplier.findAll({ attributes: ["id", "name"] });
     res.render("products/create", {
@@ -46,7 +46,7 @@ router.get("/create",  async (req, res) => {
 });
 
 // 📌 Criar um produto
-router.post("/create",  async (req, res) => {
+router.post("/create", ensureAuthenticated, ensureAdmin,  async (req, res) => {
   try {
     const { name, supplier_id, cost_value, sale_value, quantity } = req.body;
     const product = await Product.create({
@@ -66,7 +66,7 @@ router.post("/create",  async (req, res) => {
 });
 
 // 📌 Página de edição de produto
-router.get("/edit/:id",  async (req, res) => {
+router.get("/edit/:id", ensureAuthenticated, ensureAdmin,  async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id, {
       include: [{ model: Inventory, as: "inventory" }],
@@ -91,7 +91,7 @@ router.get("/edit/:id",  async (req, res) => {
 });
 
 // 📌 Atualizar produto
-router.post("/edit/:id",  async (req, res) => {
+router.post("/edit/:id", ensureAuthenticated, ensureAdmin,  async (req, res) => {
   try {
     const { name, supplier_id, cost_value, sale_value, quantity } = req.body;
     await Product.update(
@@ -114,6 +114,7 @@ router.post("/edit/:id",  async (req, res) => {
 // 📌 Deletar produto
 router.post(
   "/delete/:id",
+  ensureAuthenticated, ensureAdmin,
   async (req, res) => {
     try {
       await Inventory.destroy({ where: { product_id: req.params.id } }); // 🔹 Remove do estoque antes
@@ -128,7 +129,7 @@ router.post(
 );
 
 // 📌 Visualizar produto e quantidade em estoque
-router.get("/view/:id",  async (req, res) => {
+router.get("/view/:id", ensureAuthenticated, ensureAdmin,  async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id, {
       include: [

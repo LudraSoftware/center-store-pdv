@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { Sales, Invoice, InvoiceProducts, Product, Customer, CustomerInfo, CustomerAddress, User } = require("../models");
 
+const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
+
 // 🔹 Listar todas as notas fiscais corretamente via `Sales`
-router.get("/", async (req, res) => {
+router.get("/", ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const invoices = await Sales.findAll({
             include: [
@@ -46,7 +48,7 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get('/complete/:id', async (req, res) => {
+router.get('/complete/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const invoice = await Sales.findOne({
             where: { id: req.params.id },
@@ -121,7 +123,7 @@ router.get('/complete/:id', async (req, res) => {
 });
 
 // 🔹 Visualizar detalhes de uma nota fiscal
-router.get("/view/:id", async (req, res) => {
+router.get("/view/:id", ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const invoice = await Sales.findOne({
             where: { id: req.params.id },
@@ -176,7 +178,7 @@ router.get("/view/:id", async (req, res) => {
     }
 });
 
-router.get('/complete/:id', async (req, res) => {
+router.get('/complete/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const invoice = await Invoice.findByPk(req.params.id, {
             include: [

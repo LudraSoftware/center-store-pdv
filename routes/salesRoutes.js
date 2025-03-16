@@ -7,7 +7,7 @@ const { Invoice, Sales, InvoiceProducts, Product, Inventory, User, Customer } = 
 const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
 
 // 📌 Listagem de Vendas
-router.get("/", async (req, res) => {
+router.get("/", ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const sales = await Sales.findAll({
             include: [
@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
 });
 
 // 📌 Visualizar detalhes da venda
-router.get("/view/:id", async (req, res) => {
+router.get("/view/:id", ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const sale = await Sales.findByPk(req.params.id, {
             include: [
@@ -65,7 +65,7 @@ router.get("/view/:id", async (req, res) => {
 });
 
 // 🔹 Página do checkout
-router.get('/checkout', async (req, res) => {
+router.get('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const products = await Product.findAll({
             include: { model: Inventory, as: 'inventory' }
@@ -92,7 +92,7 @@ router.get('/checkout', async (req, res) => {
 });
 
 
-router.post('/checkout', async (req, res) => {
+router.post('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
     const { seller_id, customer_id, products, payments, discount, other_desc, invoice_description } = req.body;
 
     try {

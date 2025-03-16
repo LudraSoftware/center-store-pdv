@@ -3,8 +3,10 @@ const dashboardController = require("../controllers/dashboardController");
 
 const router = express.Router();
 
+const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
+
 // Página de dashboard (somente autenticado)
-router.get("/", async (req, res) => {
+router.get("/", ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
       const todaySales = await dashboardController.getTodaySales();
       const totalCustomers = await dashboardController.getTotalCustomers();

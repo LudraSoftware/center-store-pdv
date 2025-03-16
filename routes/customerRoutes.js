@@ -5,7 +5,7 @@ const { Customer, CustomerInfo, CustomerAddress, Sales, Invoice } = require('../
 const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
 
 // 📌 Listar clientes
-router.get('/',  async (req, res) => {
+router.get('/', ensureAuthenticated, ensureAdmin,  async (req, res) => {
     try {
         const customers = await Customer.findAll({
             attributes: ['id', 'name', 'createdAt', 'updatedAt'], // 🔹 Incluindo timestamps
@@ -24,7 +24,7 @@ router.get('/',  async (req, res) => {
 });
 
 // 📌 Página de criação de cliente
-router.get('/create',  (req, res) => {
+router.get('/create', ensureAuthenticated, ensureAdmin,  (req, res) => {
     res.render('customers/create', { messageError: req.flash('error'), messageSuccess: req.flash('success'), currentPage: 'customer' });
 });
 
@@ -47,7 +47,7 @@ router.post('/create',  async (req, res) => {
 });
 
 // 📌 Página de edição de cliente
-router.get('/edit/:id',  async (req, res) => {
+router.get('/edit/:id', ensureAuthenticated, ensureAdmin,  async (req, res) => {
     try {
         const customer = await Customer.findByPk(req.params.id, {
             include: [
@@ -70,7 +70,7 @@ router.get('/edit/:id',  async (req, res) => {
 });
 
 // 📌 Atualizar cliente
-router.post('/edit/:id',  async (req, res) => {
+router.post('/edit/:id', ensureAuthenticated, ensureAdmin,  async (req, res) => {
     const { name, document, email, phone_number, alt_phone_number, postal_code, street, number, neighborhood, state } = req.body;
 
     try {
@@ -106,7 +106,7 @@ router.post('/edit/:id',  async (req, res) => {
 });
 
 // 📌 Visualizar cliente e detalhes
-router.get('/view/:id',  async (req, res) => {
+router.get('/view/:id', ensureAuthenticated, ensureAdmin,  async (req, res) => {
     try {
         const customer = await Customer.findByPk(req.params.id, {
             include: [
