@@ -66,6 +66,12 @@
                         }) %>
                     </p>
                 </div>
+                <% if (sale.invoice && sale.invoice.invoice_description) { %>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500">Observações</label>
+                        <p class="text-gray-900 whitespace-pre-wrap"><%= sale.invoice.invoice_description %></p>
+                    </div>
+                <% } %>
             </div>
         </div>
 

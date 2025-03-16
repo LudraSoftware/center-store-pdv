@@ -39,7 +39,7 @@ router.get("/view/:id", async (req, res) => {
                 { 
                     model: Invoice,
                     as: "invoice",
-                    attributes: ["id", "discount", "money_value", "pix_value", "credit_value", "debit_value", "other_value", "other_desc",  "createdAt"],
+                    attributes: ["id", "discount", "money_value", "pix_value", "credit_value", "debit_value", "other_value", "other_desc", "invoice_description",  "createdAt"],
                     include: [
                         {
                             model: InvoiceProducts, // ✅ Associação corrigida
@@ -93,7 +93,7 @@ router.get('/checkout', async (req, res) => {
 
 
 router.post('/checkout', async (req, res) => {
-    const { seller_id, customer_id, products, payments, discount, other_desc } = req.body;
+    const { seller_id, customer_id, products, payments, discount, other_desc, invoice_description } = req.body;
 
     try {
         // 🔹 1️⃣ Verificar se o vendedor existe
@@ -165,6 +165,7 @@ router.post('/checkout', async (req, res) => {
                 money_value: payments.find(p => p.type === "money")?.value || 0,
                 other_value: payments.find(p => p.type === "other")?.value || 0,
                 other_desc: other_desc ?? "",
+                invoice_description: invoice_description
             }, { transaction });
 
             console.log("✅ Invoice criada:", invoice.id);

@@ -13,6 +13,7 @@ module.exports = (sequelize) => {
       money_value: { type: DataTypes.FLOAT, allowNull: true },
       other_value: { type: DataTypes.FLOAT, allowNull: true },
       other_desc: { type: DataTypes.STRING, allowNull: true },
+      invoice_description: { type: DataTypes.STRING, allowNull: true },
     },
     {
       sequelize,

@@ -166,6 +166,7 @@ module.exports = {
       money_value: { type: Sequelize.FLOAT, allowNull: true },
       other_value: { type: Sequelize.FLOAT, allowNull: true },
       other_desc: { type: Sequelize.STRING, allowNull: true },
+      invoice_description: { type: Sequelize.STRING, allowNull: true },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

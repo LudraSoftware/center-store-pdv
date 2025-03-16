@@ -272,6 +272,11 @@
                 Documento emitido em <%= new Date(invoice.createdAt).toLocaleDateString('pt-BR') %> às 
                 <%= new Date(invoice.createdAt).toLocaleTimeString('pt-BR') %><br>
                 Vendedor: <%= invoice.seller ? invoice.seller.name : "Não informado" %>
+                <% if (invoice.invoice && invoice.invoice.invoice_description) { %>
+                    <br><br>
+                    <div class="field-label">OBSERVAÇÕES</div>
+                    <div style="white-space: pre-wrap;"><%= invoice.invoice.invoice_description %></div>
+                <% } %>
             </div>
         </div>
     </div>
