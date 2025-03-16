@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Customer, CustomerInfo, CustomerAddress } = require('../models');
+const { Customer, CustomerInfo, CustomerAddress, Sales, Invoice } = require('../models');
 
 const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
 
@@ -115,12 +115,19 @@ router.get('/view/:id',  async (req, res) => {
             ]
         });
 
+        const sales = await Sales.findAll({
+            where: { customer_id: req.params.id },
+            include: [
+                { model: Invoice, as: 'invoice' }
+            ]
+        });
+
         if (!customer) {
             req.flash('error', 'Cliente não encontrado.');
             return res.redirect('/customers');
         }
 
-        res.render('customers/view', { customer, messageError: req.flash('error'), messageSuccess: req.flash('success'),currentPage: 'customer' });
+        res.render('customers/view', { customer, sales, messageError: req.flash('error'), messageSuccess: req.flash('success'),currentPage: 'customer' });
     } catch (err) {
         console.error('❌ Erro ao visualizar cliente:', err);
         req.flash('error', 'Erro ao visualizar cliente.');
