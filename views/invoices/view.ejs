@@ -13,9 +13,9 @@
             </span>
         </h2>
         <div class="flex space-x-4">
-            <button onclick="window.print()" class="text-blue-600 hover:text-blue-800 transition-colors">
-                <i class="fas fa-print mr-2"></i>Imprimir
-            </button>
+            <a href="/invoices/complete/<%= invoice.id %>" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors">
+                <i class="fas fa-file-alt mr-2"></i>Visualizar Nota Completa
+            </a>
             <button onclick="goBack()" class="back-button text-gray-600 hover:text-gray-800 transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i>Voltar
             </button>
@@ -137,89 +137,6 @@
         </div>
     </div>
 </div>
-
-<style>
-    @media print {
-        /* Reset all styles */
-        * {
-            color: black !important;
-            background-color: white !important;
-            box-shadow: none !important;
-        }
-
-        /* Hide navigation and non-printable elements */
-        .no-print,
-        nav,
-        header,
-        footer {
-            display: none !important;
-        }
-
-        /* Show print-specific elements */
-        .print\:block {
-            display: block !important;
-        }
-
-        /* Container styles */
-        .bg-white {
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100% !important;
-        }
-
-        /* Grid layout for print */
-        .grid {
-            display: block !important;
-        }
-
-        .grid > div {
-            margin-bottom: 1.5rem !important;
-        }
-
-        /* Table styles */
-        table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            margin-bottom: 1rem !important;
-        }
-
-        th, td {
-            border: 1px solid #000 !important;
-            padding: 0.5rem !important;
-            text-align: left !important;
-        }
-
-        /* Text styles */
-        h1, h2, h3 {
-            margin-bottom: 1rem !important;
-        }
-
-        /* Page settings */
-        @page {
-            size: A4;
-            margin: 1.5cm;
-        }
-
-        /* Ensure background colors are removed */
-        .bg-gray-50,
-        .bg-gray-100,
-        .print\:bg-white {
-            background-color: white !important;
-        }
-
-        /* Force show content */
-        body > * {
-            display: block !important;
-        }
-
-        /* Remove rounded corners and shadows */
-        .rounded-lg,
-        .shadow-lg {
-            border-radius: 0 !important;
-            box-shadow: none !important;
-        }
-    }
-</style>
 
 <script>
     function goBack() {

@@ -11,6 +11,26 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        // Global mask configurations
+        $(document).ready(function() {
+            // CPF mask: 000.000.000-00
+            $('.mask-cpf').mask('000.000.000-00');
+            
+            // Phone masks: (00) 00000-0000
+            $('.mask-phone').mask('(00) 00000-0000');
+            
+            // CEP mask: 00000-000
+            $('.mask-cep').mask('00000-000');
+            
+            // Currency mask: R$ 0,00
+            $('.mask-currency').mask('#.##0,00', {
+                reverse: true,
+                placeholder: 'R$ 0,00'
+            });
+        });
+    </script>
     <style>
         .sidebar-link.active {
             background-color: rgba(59, 130, 246, 0.1);
@@ -279,10 +299,6 @@
                     <i class="fas fa-chart-line w-5 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/sales" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'sales' ? 'active' : '' %>">
-                    <i class="fas fa-shopping-cart w-5 mr-3"></i>
-                    <span>Vendas</span>
-                </a>
                 <a href="/sales/checkout" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'checkout' ? 'active' : '' %>">
                     <i class="fas fa-cash-register w-5 mr-3"></i>
                     <span>PDV</span>
@@ -298,6 +314,10 @@
                 <a href="/suppliers" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'suppliers' ? 'active' : '' %>">
                     <i class="fas fa-truck w-5 mr-3"></i>
                     <span>Fornecedores</span>
+                </a>
+                <a href="/sales" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'sales' ? 'active' : '' %>">
+                    <i class="fas fa-shopping-cart w-5 mr-3"></i>
+                    <span>Vendas</span>
                 </a>
                 <a href="/invoices" class="sidebar-link flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 transition-colors <%= currentPage === 'invoices' ? 'active' : '' %>">
                     <i class="fas fa-file-invoice w-5 mr-3"></i>
