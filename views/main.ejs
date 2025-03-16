@@ -240,6 +240,16 @@
                 padding-top: 4rem;
             }
         }
+
+        /* Add style for back button */
+        .back-button {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .back-button:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -399,6 +409,11 @@
                 sidebar.classList.remove('active');
             }
         });
+
+        // Add back button functionality
+        function goBack() {
+            window.history.back();
+        }
     </script>
 </body>
 </html>
