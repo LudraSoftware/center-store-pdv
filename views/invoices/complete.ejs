@@ -170,7 +170,9 @@
 
         <!-- Main Header -->
         <div class="header">
-            <div class="logo"><%= company.name %></div>
+            <div class="logo">
+                    <img src="/images/logo.jpeg" alt="<%= company.name %>" style="width: 6rem;">
+                </div>
             <div class="company-info">
                 <div style="font-size: 12pt; font-weight: bold; margin-bottom: 5px;"><%= company.name %></div>
                 <div><%= company.address.street %>, <%= company.address.number %></div>
@@ -257,6 +259,12 @@
                 <% } %>
             </tbody>
             <tfoot>
+                <% if (invoice.invoice.discount) { %>
+                    <tr>
+                        <td colspan="4" class="text-right" style="font-weight: bold;">Desconto:</td>
+                        <td class="text-right" style="font-weight: bold;">R$ <%= invoice.invoice.discount %></td>
+                    </tr>
+                <% } %>
                 <tr>
                     <td colspan="4" class="text-right" style="font-weight: bold;">VALOR TOTAL:</td>
                     <td class="text-right" style="font-weight: bold;">R$ <%= invoice.invoice ? invoice.invoice.invoiceProducts.reduce((sum, item) => 
