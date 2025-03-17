@@ -15,7 +15,23 @@ app.use(express.static('public'));
 app.use(expressLayouts);
 app.set('layout', 'main');
 
+// Middlewares
+app.use(express.json()); // ✅ Permite receber JSON no req.body
+app.use(express.urlencoded({ extended: true })); // ✅ Permite receber dados de formulários
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 app.use((req, res, next) => {
+  
+  res.locals.user = req.user; 
+  
   res.locals.company = {
       name: process.env.EMPLOYMENT_NAME,
       email: process.env.EMPLOYMENT_EMAIL,
@@ -32,18 +48,6 @@ app.use((req, res, next) => {
   };
   next();
 });
-
-// Middlewares
-app.use(express.json()); // ✅ Permite receber JSON no req.body
-app.use(express.urlencoded({ extended: true })); // ✅ Permite receber dados de formulários
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
-app.use(flash());
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Rotas
 app.use('/', require('./routes/authRoutes'));
