@@ -141,16 +141,13 @@ router.post('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
 
         console.log("✅ Produtos válidos!");
 
-        // 🔹 4️⃣ Testar pagamentos e valores
-        const totalValue = payments.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const finalValue = totalValue -  parseFloat(discount) || 0;
-
-        if (Math.abs(finalValue - totalPayments) > 0.01) {
-            return res.status(400).json({
-                success: false,
-                message: "Os valores dos pagamentos não correspondem ao total após desconto!"
-            });
-        }
+         // 🔹 4️⃣ Testar pagamentos e valores
+         let totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.value || 0), 0);
+         let finalTotal = totalPrice - (discount || 0);
+ 
+         if (totalPayments !== finalTotal) {
+             return res.status(400).json({ message: "Os valores dos pagamentos não correspondem ao total!" });
+         }
 
         console.log(`✅ Total da compra: R$ ${finalTotal.toFixed(2)}`);
         console.log(`✅ Total dos pagamentos: R$ ${totalPayments.toFixed(2)}`);
