@@ -169,16 +169,16 @@
         updateCheckout();
     }
 
+    function removeProduct(productId) {
+        checkoutItems = checkoutItems.filter(item => item.id !== productId);
+        updateCheckout();
+    }
+
     function changeQuantity(productId, delta) {
         let item = checkoutItems.find((p) => p.id === productId);
         if (item && item.quantity + delta > 0 && item.quantity + delta <= item.stock) {
             item.quantity += delta;
         }
-        updateCheckout();
-    }
-
-    function removeProduct(productId) {
-        checkoutItems = checkoutItems.filter(item => item.id !== productId);
         updateCheckout();
     }
 
@@ -253,13 +253,14 @@
 
         let paymentTotal = payments.reduce((sum, p) => sum + parseFloat(p.value || 0), 0);
         let remainingAmount = total - paymentTotal - discount;
+        remainingAmount = Math.abs(remainingAmount) < 0.01 ? 0 : remainingAmount;
 
         document.getElementById("checkout-total").innerText = `R$ ${total.toFixed(2)}`;
         document.getElementById("total-payments").innerText = `R$ ${paymentTotal.toFixed(2)}`;
         document.getElementById("remaining-amount").innerText = `R$ ${remainingAmount.toFixed(2)}`;
 
         let finalizeButton = document.getElementById("finalize-sale");
-        finalizeButton.disabled = remainingAmount !== 0 || total <= 0;
+        finalizeButton.disabled = remainingAmount !== 0 || checkoutItems.length === 0;
     }
 
     function renderPayments() {
