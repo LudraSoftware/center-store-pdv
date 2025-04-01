@@ -143,8 +143,7 @@ router.post('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
 
         // 🔹 4️⃣ Testar pagamentos e valores
         const totalValue = payments.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const discount = parseFloat(discount) || 0;
-        const finalValue = totalValue - discount;
+        const finalValue = totalValue -  parseFloat(discount) || 0;
 
         if (Math.abs(finalValue - totalPayments) > 0.01) {
             return res.status(400).json({
