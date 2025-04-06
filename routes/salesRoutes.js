@@ -144,8 +144,7 @@ router.post('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
          // 🔹 4️⃣ Testar pagamentos e valores
          let totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.value || 0), 0);
          let finalTotal = totalPrice - (discount || 0);
- 
-         if (totalPayments !== finalTotal) {
+         if (totalPayments.toFixed(2) !== finalTotal.toFixed(2)) {
              return res.status(400).json({ message: "Os valores dos pagamentos não correspondem ao total!" });
          }
 
