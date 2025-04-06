@@ -6,27 +6,37 @@ exports.getTodaySales = async () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const todaySalesResult = await Invoice.findOne({
-    attributes: [
-      [fn("SUM", col("pix_value")), "pix_value"],
-      [fn("SUM", col("credit_value")), "credit_value"],
-      [fn("SUM", col("debit_value")), "debit_value"],
-      [fn("SUM", col("money_value")), "money_value"],
-      [fn("SUM", col("other_value")), "other_value"],
-      [fn("SUM", col("discount")), "discount"]
+  const todaySalesResult = await Sales.findAll({
+    where: { 
+      createdAt: { [Op.gte]: today },
+      canceled_at: null
+    },
+    include: [
+      {
+        model: Invoice,
+        as: "invoice",
+        attributes: [
+          "pix_value",
+          "credit_value",
+          "debit_value",
+          "money_value",
+          "other_value",
+          "discount"
+        ]
+      }
     ],
-    where: { createdAt: { [Op.gte]: today } },
     raw: true
   });
 
-  return parseFloat(
-    (todaySalesResult.pix_value || 0) +
-    (todaySalesResult.credit_value || 0) +
-    (todaySalesResult.debit_value || 0) +
-    (todaySalesResult.money_value || 0) +
-    (todaySalesResult.other_value || 0) +
-    (todaySalesResult.discount || 0)
-  ).toFixed(2);
+  return todaySalesResult.map(sale => {
+    return parseFloat(sale["invoice.pix_value"] || 0) +
+      parseFloat(sale["invoice.credit_value"] || 0) +
+      parseFloat(sale["invoice.debit_value"] || 0) +
+      parseFloat(sale["invoice.money_value"] || 0) +
+      parseFloat(sale["invoice.other_value"] || 0) +
+      parseFloat(sale["invoice.discount"] || 0);
+  }
+  ).reduce((acc, curr) => acc + curr, 0).toFixed(2);
 };
 
 // 🔹 2️⃣ **Total de Clientes**
@@ -44,31 +54,37 @@ exports.getDailyProfit = async () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const dailyProfitResult = await InvoiceProducts.findAll({
-    attributes: [
-      [fn("SUM", literal("`product`.`sale_value` * `InvoiceProducts`.`quantity`")), "total_sale_value"],
-      [fn("SUM", literal("`product`.`cost_value` * `InvoiceProducts`.`quantity`")), "total_cost_value"]
-    ],
+  const dailyProfitResult = await Sales.findAll({
+    where: { 
+      createdAt: { [Op.gte]: today },
+      canceled_at: null
+    },
+    raw: true
+  });
+
+  const invoiceProducts = await InvoiceProducts.findAll({
+    attributes: ["invoice_id", "product_id", "quantity"],
     include: [
       {
         model: Product,
         as: "product",
-        attributes: []
-      },
-      {
-        model: Invoice,
-        as: "invoice",
-        attributes: [],
-        where: { createdAt: { [Op.gte]: today } }
+        attributes: ["cost_value", "sale_value"]
       }
     ],
+    where: {
+      invoice_id: dailyProfitResult.map(sale => sale.invoice_id)
+    },
     raw: true
   });
 
-  const totalSaleValue = parseFloat(dailyProfitResult[0]?.total_sale_value || 0);
-  const totalCostValue = parseFloat(dailyProfitResult[0]?.total_cost_value || 0);
   
-  return (totalSaleValue - totalCostValue).toFixed(2);
+  let totalProfit = 0;
+  
+  invoiceProducts.map(invoiceProduct => {
+    totalProfit += parseFloat(invoiceProduct["product.sale_value"] || 0) - parseFloat(invoiceProduct["product.cost_value"] || 0);
+  });
+
+  return totalProfit;
 };
 
 // 🔹 5️⃣ **Lucro do Mês**
@@ -115,6 +131,11 @@ exports.getSalesData = async () => {
       date.setDate(date.getDate() - i);
       return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
     }).reverse();
+
+    const salesByDay = await Sales.findAll({
+      where: { createdAt: { [Op.gte]: last7DaysStart }, canceled_at: null },
+      raw: true
+    });
   
     const paymentsByDay = await Invoice.findAll({
       attributes: [
@@ -126,7 +147,9 @@ exports.getSalesData = async () => {
         [fn("SUM", col("other_value")), "other_value"],
         [fn("SUM", col("discount")), "discount"]
       ],
-      where: { createdAt: { [Op.gte]: last7DaysStart } },
+      where: { createdAt: { [Op.gte]: last7DaysStart },
+        id: salesByDay.map(sale => sale.invoice_id)
+       },
       group: [fn("DATE", col("createdAt"))],
       raw: true
     });
@@ -162,7 +185,7 @@ exports.getTopSellers = async () => {
                 )
             ), "total_sales"]
         ],
-        where: { createdAt: { [Op.gte]: firstDayOfMonth } },
+        where: { createdAt: { [Op.gte]: firstDayOfMonth },  canceled_at: null },
         include: [
             {
                 model: User,
@@ -192,12 +215,25 @@ exports.getTopProducts = async () => {
     firstDayOfMonth.setDate(1);
     firstDayOfMonth.setHours(0, 0, 0, 0);
 
-    const products = await InvoiceProducts.findAll({
+  const SalesResult = await Sales.findAll({
+        where: { createdAt: { [Op.gte]: firstDayOfMonth}, canceled_at: null },
+        raw: true
+    });
+    
+    const invoices = await Invoice.findAll({
+        attributes: ["id"],
+        where: {
+            id: SalesResult.map(sale => sale.invoice_id)
+        },
+        raw: true
+    });
+
+      const products = await InvoiceProducts.findAll({
         attributes: [
             "product_id",
             [fn("SUM", col("quantity")), "total_quantity"]
         ],
-        where: { createdAt: { [Op.gte]: firstDayOfMonth } },
+        where: { createdAt: { [Op.gte]: firstDayOfMonth }, invoice_id: invoices.map(invoice => invoice.id) },
         include: [
             {
                 model: Product,
@@ -230,7 +266,7 @@ exports.getTopCustomers = async () => {
                 )
             ), "total_purchases"]
         ],
-        where: { createdAt: { [Op.gte]: firstDayOfMonth } },
+        where: { createdAt: { [Op.gte]: firstDayOfMonth },  canceled_at: null },
         include: [
             {
                 model: Customer,

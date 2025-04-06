@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const { Invoice, Sales, InvoiceProducts, Product, Inventory, User, Customer } = require('../models');
-
-
 const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
 
 // 📌 Listagem de Vendas
@@ -42,8 +40,8 @@ router.get("/view/:id", ensureAuthenticated, ensureAdmin, async (req, res) => {
                     attributes: ["id", "discount", "money_value", "pix_value", "credit_value", "debit_value", "other_value", "other_desc", "invoice_description",  "createdAt"],
                     include: [
                         {
-                            model: InvoiceProducts, // ✅ Associação corrigida
-                            as: "invoiceProducts", // ✅ Usando o alias correto
+                            model: InvoiceProducts,
+                            as: "invoiceProducts",
                             include: [
                                 { model: Product, as: "product", attributes: ["id", "name", "cost_value", "sale_value"] }
                             ]
@@ -91,7 +89,7 @@ router.get('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
     }
 });
 
-
+// 📌 Processar checkout
 router.post('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
     const { seller_id, customer_id, products, payments, discount, other_desc, invoice_description } = req.body;
 
@@ -141,12 +139,12 @@ router.post('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
 
         console.log("✅ Produtos válidos!");
 
-         // 🔹 4️⃣ Testar pagamentos e valores
-         let totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.value || 0), 0);
-         let finalTotal = totalPrice - (discount || 0);
-         if (totalPayments.toFixed(2) !== finalTotal.toFixed(2)) {
-             return res.status(400).json({ message: "Os valores dos pagamentos não correspondem ao total!" });
-         }
+        // 🔹 4️⃣ Testar pagamentos e valores
+        let totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.value || 0), 0);
+        let finalTotal = totalPrice - (discount || 0);
+        if (totalPayments.toFixed(2) !== finalTotal.toFixed(2)) {
+            return res.status(400).json({ message: "Os valores dos pagamentos não correspondem ao total!" });
+        }
 
         console.log(`✅ Total da compra: R$ ${finalTotal.toFixed(2)}`);
         console.log(`✅ Total dos pagamentos: R$ ${totalPayments.toFixed(2)}`);
@@ -211,5 +209,91 @@ router.post('/checkout', ensureAuthenticated, ensureAdmin, async (req, res) => {
         res.status(500).json({ message: "Erro ao processar a venda!" });
     }
 });
+
+// 📌 Cancelar venda
+// 📌 Cancelar venda
+router.post('/cancel/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        // Buscar a venda com produtos
+        const sale = await Sales.findByPk(req.params.id, {
+            include: [
+                {
+                    model: Invoice,
+                    as: "invoice",
+                    include: [{
+                        model: InvoiceProducts,
+                        as: "invoiceProducts",
+                        include: [{ model: Product, as: "product" }]
+                    }]
+                }
+            ],
+            transaction
+        });
+
+        if (!sale) {
+            await transaction.rollback();
+            return res.status(404).json({
+                success: false,
+                message: 'Venda não encontrada'
+            });
+        }
+
+        if (sale.canceled_at) {
+            await transaction.rollback();
+            return res.status(400).json({
+                success: false,
+                message: 'Esta venda já está cancelada'
+            });
+        }
+
+        // Verificar se o motivo foi fornecido
+        const { reason } = req.body;
+        if (!reason) {
+            await transaction.rollback();
+            return res.status(400).json({
+                success: false,
+                message: 'O motivo do cancelamento é obrigatório'
+            });
+        }
+
+        // Devolver produtos ao estoque
+        for (const invoiceProduct of sale.invoice.invoiceProducts) {
+            await Inventory.increment('quantity', {
+                by: invoiceProduct.quantity,
+                where: { product_id: invoiceProduct.product_id },
+                transaction
+            });
+
+            console.log(`✅ Devolvido ${invoiceProduct.quantity} unidades do produto ${invoiceProduct.product.name} ao estoque`);
+        }
+
+        // Marcar venda como cancelada
+        await sale.update({
+            canceled_at: new Date(),
+            cancel_reason: reason
+        }, { transaction });
+
+        console.log("✅ Venda marcada como cancelada");
+        console.log("✅ Motivo:", reason);
+
+        await transaction.commit();
+        console.log("✅ Transação finalizada com sucesso");
+
+        res.json({
+            success: true,
+            message: 'Venda cancelada com sucesso'
+        });
+    } catch (error) {
+        await transaction.rollback();
+        console.error("❌ Erro ao cancelar venda:", error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro ao cancelar a venda'
+        });
+    }
+});
+
 
 module.exports = router;

@@ -2,6 +2,9 @@
     <div class="flex justify-between items-center mb-6 no-print">
         <h2 class="text-2xl font-bold text-gray-800">
             Venda #<%= sale.id %>
+            <% if (sale.canceled_at) { %>
+                <span class="ml-2 px-2 py-1 text-sm font-semibold text-white bg-red-500 rounded">CANCELADA</span>
+            <% } %>
             <span class="ml-2 text-sm text-gray-500">
                 <%= new Date(sale.createdAt).toLocaleDateString('pt-BR', { 
                     day: '2-digit',
@@ -13,6 +16,11 @@
             </span>
         </h2>
         <div class="flex space-x-4">
+            <% if (!sale.canceled_at) { %>
+                <button onclick="cancelSale(<%= sale.id %>)" class="text-red-600 hover:text-red-800 transition-colors">
+                    <i class="fas fa-ban mr-2"></i>Cancelar Venda
+                </button>
+            <% } %>
             <button onclick="goBack()" class="back-button text-gray-600 hover:text-gray-800 transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i>Voltar
             </button>
@@ -134,6 +142,28 @@
         </div>
     </div>
 
+    <% if (sale.canceled_at) { %>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-red-800 mb-2">Informações do Cancelamento</h3>
+            <div class="space-y-2">
+                <p class="text-red-700">
+                    <strong>Data do Cancelamento:</strong>
+                    <%= new Date(sale.canceled_at).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) %>
+                </p>
+                <p class="text-red-700">
+                    <strong>Motivo:</strong>
+                    <%= sale.cancel_reason %>
+                </p>
+            </div>
+        </div>
+    <% } %>
+
     <!-- Produtos -->
     <div class="bg-gray-50 print:bg-white p-6 rounded-lg mb-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Produtos</h3>
@@ -185,3 +215,65 @@
         </div>
     </div>
 </div>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+
+    function cancelSale(saleId) {
+        Swal.fire({
+            title: 'Cancelar Venda',
+            text: 'Tem certeza que deseja cancelar esta venda? Esta ação não pode ser desfeita.',
+            icon: 'warning',
+            input: 'text',
+            inputLabel: 'Motivo do cancelamento',
+            inputPlaceholder: 'Digite o motivo do cancelamento',
+            inputAttributes: {
+                required: 'true'
+            },
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, cancelar!',
+            cancelButtonText: 'Não, manter',
+            showLoaderOnConfirm: true,
+            preConfirm: (reason) => {
+                if (!reason) {
+                    Swal.showValidationMessage('O motivo do cancelamento é obrigatório');
+                    return false;
+                }
+                return fetch(`/sales/cancel/${saleId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reason })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        throw new Error(data.message || 'Erro ao cancelar a venda');
+                    }
+                    return data;
+                });
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire(
+                    'Cancelada!',
+                    'A venda foi cancelada com sucesso.',
+                    'success'
+                ).then(() => {
+                    window.location.reload();
+                });
+            }
+        }).catch(error => {
+            Swal.fire(
+                'Erro!',
+                error.message,
+                'error'
+            );
+        });
+    }
+</script>

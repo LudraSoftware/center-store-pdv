@@ -8,6 +8,9 @@ const { ensureAuthenticated, ensureAdmin } = require("../middlewares/auth");
 router.get("/", ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const invoices = await Sales.findAll({
+            where: {
+                canceled_at: null // Only show active sales
+            },
             include: [
                 {
                     model: Invoice,
