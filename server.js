@@ -57,6 +57,7 @@ app.use('/products', require('./routes/productsRoutes'));
 app.use('/customers', require('./routes/customerRoutes'));
 app.use('/sales', require('./routes/salesRoutes'));
 app.use('/invoices', require('./routes/invoiceRoutes'));
+app.use('/reports', require('./routes/ReportsRoutes'));
 
 // Iniciar servidor
 db.sequelize.sync().then(() => {
